@@ -349,4 +349,8 @@ void GameManager::updateFlux() noexcept {
     for (auto i : toErase) {
         flux.erase(flux.begin() + i);
     }
+
+    // A FAIRE
+    // Demerger les flux qui ne se partage plus, 
+    //calculer des AStar entre NPCs pour savoir si ils partagent des flux
 }
