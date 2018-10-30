@@ -284,8 +284,9 @@ void GameManager::reafecterObjectifsSelonDistance() {
                 const int objectifNpc = npc.getShortTermObjectif();
                 const int objectifAutreNpc = autreNpc.getShortTermObjectif();
 
-                const int tempsMaxChemins = std::max(m.getDistance(npc.getTileId(), objectifNpc),
-                                                     m.distanceHex(autreNpc.getTileId(), objectifAutreNpc));
+                const int tempsMaxChemins = std::max(npc.getChemin().distance(), autreNpc.getChemin().distance());
+                //const int tempsMaxChemins = std::max(m.getDistance(npc.getTileId(), objectifNpc),
+                                                     //m.getDistance(autreNpc.getTileId(), objectifAutreNpc));
 
                 // Si l'interversion des objectifs est bénéfique pour l'un deux et ne coûte rien à l'autre (ou lui est aussi bénéfique)
                 if (npc.isAccessibleTile(objectifAutreNpc)

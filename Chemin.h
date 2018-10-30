@@ -26,6 +26,7 @@ public:
     void addFirst(int); // Inverse de removeFirst, place une case supplémentaire au début du chemin
     void resetChemin(); // Réinitialise le chemin
     int getFirst() const; // Renvoie la première case du chemin
+    vector<int> getChemin() const;
 };
 
 

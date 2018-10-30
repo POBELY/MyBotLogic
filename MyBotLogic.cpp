@@ -76,6 +76,10 @@ MyBotLogic::MyBotLogic() :
 
     // On fait se déplacer chaque Npc vers son objectif associé =)
     gm.moveNpcs(_actionList);
+    GameManager::Log("Compteur 1 : " + to_string(gm.m.compteur1));
+    GameManager::Log("Compteur 2 : " + to_string(gm.m.compteur2));
+    gm.m.compteur1 = 0;
+    gm.m.compteur2 = 0;
 }
 
 /*virtual*/ void MyBotLogic::Exit()

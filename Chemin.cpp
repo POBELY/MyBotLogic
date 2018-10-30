@@ -78,3 +78,7 @@ void Chemin::resetChemin() {
     chemin.clear();
     inaccessible = false;
 }
+
+vector<int> Chemin::getChemin() const {
+   return chemin;
+}

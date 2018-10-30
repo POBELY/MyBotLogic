@@ -25,9 +25,12 @@ class Map {
     map<unsigned int, ObjectInfo> fenetres;
     map<unsigned int, ObjectInfo> activateurs;
     vector<vector<int>> distances; // ensemble des distances cases à cases
+    vector<vector<int>> distancesAStar; // ensemble des distances cases à case
 
     int total_size() const noexcept { return rowCount * colCount; }
 public:
+   int compteur1 = 0;
+   int compteur2 = 0;
 
     Map() = default;
     Map(const LevelInfo);
@@ -55,6 +58,7 @@ public:
     int getNbTilesDecouvertes() const noexcept;
     MapTile& getTile(int id);
     int getDistance(int tile1,int tile2);
+    int getDistanceAStar(int tile1, int tile2);
 
     vector<unsigned int> getObjectifs();
     map<unsigned int, ObjectInfo> getMurs();

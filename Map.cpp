@@ -57,6 +57,8 @@ Map::Map(const LevelInfo levelInfo) :
         distances.push_back(v);
     }
 
+    // Creer matrice distancesAStar
+    distancesAStar = vector<vector<int>>(getNbTiles(), vector<int>(getNbTiles(), -1));
 }
 
 bool Map::isInMap(int idTile) const noexcept {
@@ -215,7 +217,15 @@ Chemin Map::aStar(int depart, int arrivee, float coefEvaluation) noexcept {
         }
     }
 
-    return get_path(std::move(close_nodes), arrivee);
+    // Mettre a jour la matrice distancesAStar
+    // Calculer pour tous les chemins intermédiaires !!! A FAIRE
+    Chemin path = get_path(std::move(close_nodes), arrivee);
+    vector<int> chemin = path.getChemin();
+    (distancesAStar[depart])[arrivee] = chemin.size();
+    (distancesAStar[arrivee])[depart] = chemin.size();
+    ++compteur2;
+
+    return path;
 }
 
 Tile::ETilePosition Map::getDirection(int ind1, int ind2) const noexcept {
@@ -572,7 +582,18 @@ map<unsigned int, ObjectInfo> Map::getActivateurs() {
 }
 
 int Map::getDistance(int tile1, int tile2) {
-    return (distances[tile1])[tile2];
+   int dist = getDistanceAStar(tile1,tile2);
+   if (dist != -1) {
+      ++compteur1;
+      return dist;
+   } else {
+      aStar(tile1, tile2);
+      return getDistanceAStar(tile1, tile2);
+   }
+}
+
+int Map::getDistanceAStar(int tile1, int tile2) {
+   return (distancesAStar[tile1])[tile2];
 }
 
 bool Map::objectExist(int objet) {
