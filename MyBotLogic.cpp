@@ -7,6 +7,7 @@
 #include "windows.h"
 #include "MyBotLogic/Profileur.h"
 #include <chrono>
+#include <fstream>
 using namespace std::chrono;
 
 
@@ -79,6 +80,17 @@ MyBotLogic::MyBotLogic() :
 
 /*virtual*/ void MyBotLogic::Exit()
 {
-    std::ofstream profile_json("profile.json");
-    profile_json << EventProfiler::instance() << std::endl;
+    GameManager::Log("exit");
+    GameManager::LogRelease("exit");
+
+    std::ofstream profile_json("LocalMatchResults\\aibotlog\\profile.json");
+    if(profile_json) {
+        profile_json << EventProfiler::instance() << std::endl;
+        GameManager::Log("save profile.json");
+        GameManager::LogRelease("save profile.json");
+    }
+    else {
+        GameManager::Log("failed to save profile.json");
+        GameManager::LogRelease("failed to save profile.json");
+    }
 }

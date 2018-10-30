@@ -37,14 +37,18 @@ public:
     int affecterMeilleurChemin(Map &m) noexcept; // Affecte au npc le chemin avec le meilleur score et renvoie la destination de ce chemin !
     vector<int> floodfill(Map &m); // Calcule le coût et l'ensemble des tiles accessibles pour un npcs, et MAJ ses attributs.
 
-    int getId();
-    int getTileId();
-    int getTileObjectif();
+    int getId() const noexcept;
+    int getTileId() const noexcept;
+    int getShortTermObjectif() const noexcept;
+    int getTileObjectif() const noexcept;
     void setTileObjectif(int idTile);
-    Chemin& getChemin();
-    vector<int> getEnsembleAccessible();
-    bool isAccessibleTile(int tileId);
-    bool isArrived();
+    const Chemin& getChemin() const noexcept;
+    Chemin& getChemin() noexcept;
+    void setChemin(const Chemin& chemin);
+    void setChemin(Chemin&& chemin);
+    const vector<int>& getEnsembleAccessible() const noexcept;
+    bool isAccessibleTile(int tileId) const;
+    bool isArrived() const;
     void setArrived(bool etat);
     void setEnsembleAccessible(vector<int> newEnsembleAccessible);
 };

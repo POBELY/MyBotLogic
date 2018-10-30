@@ -13,9 +13,11 @@ class Chemin {
 public:
 
     Chemin();
+
     int distance() const noexcept;
     int destination() const noexcept;
     void setInaccessible() noexcept;
+    void setInaccessibleIfEmpty() noexcept;
     bool isAccessible() const noexcept;
     bool empty() const noexcept;
     string toString() const noexcept;
@@ -23,7 +25,7 @@ public:
     void removeFirst(); // Enlève la première case du chemin, utile pour mettre le chemin à jour
     void addFirst(int); // Inverse de removeFirst, place une case supplémentaire au début du chemin
     void resetChemin(); // Réinitialise le chemin
-    int getFirst(); // Renvoie la première case du chemin
+    int getFirst() const; // Renvoie la première case du chemin
 };
 
 

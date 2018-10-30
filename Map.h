@@ -26,6 +26,7 @@ class Map {
     map<unsigned int, ObjectInfo> activateurs;
     vector<vector<int>> distances; // ensemble des distances cases à cases
 
+    int total_size() const noexcept { return rowCount * colCount; }
 public:
 
     Map() = default;

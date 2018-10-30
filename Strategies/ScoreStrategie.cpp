@@ -22,8 +22,7 @@ BT_Noeud::ETAT_ELEMENT ScoreStrategie::execute() noexcept {
     // L'ensemble des tiles que l'on va visiter
     vector<int> tilesAVisiter;
 
-    for (auto& pair : gm.getNpcs()) {
-        Npc& npc = pair.second;
+    for (auto& npc : gm.getNpcs()) {
         npc.resetChemins();
 
         // Calculer le score de chaque tile pour le npc

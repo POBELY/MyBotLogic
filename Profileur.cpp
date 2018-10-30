@@ -27,9 +27,9 @@ std::ostream& operator<<(std::ostream& out, const EventProfiler::Event& ev) {
     }
 
     out << "\",";
-    out << "\"ts\": \"" << ev.tm.count() << "\","
-        << "\"pid\": \"0\","
-        << "\"tid\": \"0\""
+    out << "\"ts\": " << ev.tm.count() << ","
+        << "\"pid\": 0,"
+        << "\"tid\": 0"
         << "}";
     return out;
 }

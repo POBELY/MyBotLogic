@@ -11,8 +11,7 @@ BT_Noeud::ETAT_ELEMENT CheminsForAllNpcs::execute() noexcept {
    vector<unsigned int> objectifNonDonne = gm.m.getObjectifs();
 
    // On parcours chaque NPC
-   for (auto& pair : gm.getNpcs()) {
-      Npc& npc = pair.second;
+   for (auto& npc : gm.getNpcs()) {
       bool objFound = false;
       // On regarde si on pourra lui assigner un objectif
 	  vector<unsigned int>::iterator it = objectifNonDonne.begin();

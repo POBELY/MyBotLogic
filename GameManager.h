@@ -17,7 +17,7 @@ class npc_deja_existant {};
 
 class GameManager {
     static Logger logger, loggerRelease;
-    map<int, Npc> npcs; // Les npcs sont stockés par leurs ids
+    std::vector<Npc> npcs;
 public:
     Map m;
     Selecteur behaviorTreeManager; // Arbre de comportement du GameManager pour déterminer la stratégie à suivre
@@ -38,7 +38,7 @@ public:
     };
 
     Npc& getNpcById(int id);
-    map<int, Npc>& getNpcs();
+    std::vector<Npc>& getNpcs();
     void addNpc(Npc npc);
 
     static void Log(string str) noexcept { // Permet de débugger ! :D

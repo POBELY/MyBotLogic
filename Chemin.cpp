@@ -26,6 +26,10 @@ void Chemin::setInaccessible() noexcept {
     inaccessible = true;
 }
 
+void Chemin::setInaccessibleIfEmpty() noexcept {
+    inaccessible = chemin.empty();
+}
+
 bool Chemin::isAccessible() const noexcept {
     return !inaccessible;
 }
@@ -62,7 +66,8 @@ void Chemin::addFirst(int elem) {
     chemin.push_back(elem);
 }
 
-int Chemin::getFirst() {
+int Chemin::getFirst() const {
+
     if (empty())
         throw chemin_vide{};
     else

@@ -148,15 +148,19 @@ vector<int> Npc::floodfill(Map &m) {
    return Open;
 }
 
-int Npc::getId() {
+int Npc::getId() const noexcept {
     return id;
 }
 
-int Npc::getTileId() {
+int Npc::getTileId() const noexcept {
     return tileId;
 }
 
-int Npc::getTileObjectif() {
+int Npc::getShortTermObjectif() const noexcept {
+    return getChemin().empty() ? getTileId() : getChemin().destination();
+}
+
+int Npc::getTileObjectif() const noexcept {
     return tileObjectif;
 }
 
@@ -164,19 +168,32 @@ void Npc::setTileObjectif(int idTile) {
     tileObjectif = idTile;
 }
 
-Chemin& Npc::getChemin() {
+const Chemin& Npc::getChemin() const noexcept {
     return chemin;
 }
 
-vector<int> Npc::getEnsembleAccessible() {
+Chemin& Npc::getChemin() noexcept {
+    return chemin;
+}
+
+void Npc::setChemin(const Chemin& chemin) {
+   this->chemin = chemin;
+}
+
+void Npc::setChemin(Chemin&& chemin) {
+    this->chemin = std::move(chemin);
+}
+
+const vector<int>& Npc::getEnsembleAccessible() const noexcept {
     return ensembleAccessible;
 }
 
-bool Npc::isAccessibleTile(int tileId) {
+bool Npc::isAccessibleTile(int tileId) const {
+    ScopedProfiler p("Npc::isAccessibleTile");
     return find(ensembleAccessible.begin(), ensembleAccessible.end(), tileId) != ensembleAccessible.end();
 }
 
-bool Npc::isArrived() {
+bool Npc::isArrived() const {
     return estArrive;
 }
 
