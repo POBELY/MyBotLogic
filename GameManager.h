@@ -6,6 +6,7 @@
 #include "Logger.h"
 #include "Mouvement.h"
 #include "TurnInfo.h"
+#include "Profileur.h"
 
 #include "BehaviorTree/Composite/Selecteur.h"
 
@@ -31,7 +32,10 @@ public:
     void updateModel(const TurnInfo&) noexcept; // Met à jour le modèle avec les informations que découvrent les NPCS
     void updateFlux() noexcept;
     void InitializeBehaviorTree() noexcept; // Permet d'initialiser le BT
-    void execute() noexcept { behaviorTreeManager.execute(); };
+    void execute() noexcept {
+        ScopedProfiler p("GM Execute");
+        behaviorTreeManager.execute(); 
+    };
 
     Npc& getNpcById(int id);
     map<int, Npc>& getNpcs();

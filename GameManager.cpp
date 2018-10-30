@@ -72,7 +72,7 @@ vector<Mouvement> GameManager::getAllMouvements() {
 
             
             Tile::ETilePosition direction = m.getDirection(npc.second.getTileId(), caseCible);
-            GameManager::Log("direction = " + to_string(direction));
+            GameManager::Log(std::string("direction = ") + to_string(direction));
 
             // On enregistre le mouvement
             mouvements.push_back(Mouvement(npc.second.getId(), npc.second.getTileId(), caseCible, direction));
@@ -88,6 +88,7 @@ vector<Mouvement> GameManager::getAllMouvements() {
 }
 
 void GameManager::moveNpcs(vector<Action*>& actionList) noexcept {
+    ScopedProfiler p("GameManager::moveNpcs");
     // TODO !
     // Il faut réordonner les chemins entre les npcs !
     // Cad que si deux Npcs peuvent échanger leurs objectifs et que cela diminue leurs chemins respectifs, alors il faut le faire !
@@ -210,6 +211,7 @@ void GameManager::gererCollisionsMemeCaseCible(vector<Mouvement>& mouvements) {
 }
 
 void GameManager::ordonnerMouvements(vector<Mouvement>& mouvements) noexcept {
+    ScopedProfiler p("GameManager::ordonnerMouvements");
     // Si deux npcs veulent aller sur la même case, alors celui qui a le plus de chemin à faire passe, et tous les autres restent sur place !
     gererCollisionsMemeCaseCible(mouvements);
 
@@ -290,7 +292,7 @@ void GameManager::addNewObjects(TurnInfo ti) noexcept {
 }
 
 void GameManager::updateModel(const TurnInfo &ti) noexcept {
-   
+    ScopedProfiler p("GM Update Model");
     // On essaye de rajouter les nouvelles tiles !
     auto pre = high_resolution_clock::now();
     addNewTiles(ti);
@@ -331,6 +333,7 @@ void GameManager::addNpc(Npc npc) {
 }
 
 void GameManager::reafecterObjectifsSelonDistance() {
+    ScopedProfiler p("GameManager::reafecterObjectifsSelonDistance");
     // Tant que l'on fait des modifications on continue ...
     bool continuer = true;
     while (continuer) {

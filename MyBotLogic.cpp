@@ -5,6 +5,7 @@
 #include "LevelInfo.h"
 
 #include "windows.h"
+#include "MyBotLogic/Profileur.h"
 #include <chrono>
 using namespace std::chrono;
 
@@ -63,33 +64,21 @@ MyBotLogic::MyBotLogic() :
 
 /*virtual*/ void MyBotLogic::FillActionList(TurnInfo& _turnInfo, std::vector<Action*>& _actionList)
 {
-    auto preFAL = high_resolution_clock::now();
     GameManager::Log("TURN =========================== " + to_string(_turnInfo.turnNb));
+    ScopedProfiler p("Turn");
 
     // On complète notre modèle avec l'information qu'on vient de découvrir !
-    auto pre = high_resolution_clock::now();
     gm.updateModel(_turnInfo);
-    auto post = high_resolution_clock::now();
-    GameManager::Log("Durée Update = " + to_string(duration_cast<microseconds>(post - pre).count() / 1000.f) + "ms");
 
     // On définit notre stratégie en exécutant notre arbre de comportement
-    pre = high_resolution_clock::now();
     gm.execute();
-    post = high_resolution_clock::now();
-    GameManager::Log("Durée Execute = " + to_string(duration_cast<microseconds>(post - pre).count() / 1000.f) + "ms");
 
     // On fait se déplacer chaque Npc vers son objectif associé =)
-    pre = high_resolution_clock::now();
     gm.moveNpcs(_actionList);
-    post = high_resolution_clock::now();
-    GameManager::Log("Durée Move = " + to_string(duration_cast<microseconds>(post - pre).count() / 1000.f) + "ms");
-
-    auto postFAL = high_resolution_clock::now();
-    GameManager::Log("Durée Tour = " + to_string(duration_cast<microseconds>(postFAL - preFAL).count() / 1000.f) + "ms");
-    GameManager::LogRelease("Durée Tour numéro " + to_string(_turnInfo.turnNb) + " = " + to_string(duration_cast<microseconds>(postFAL - preFAL).count() / 1000.f) + "ms");
 }
 
 /*virtual*/ void MyBotLogic::Exit()
 {
-	//Write Code Here
+    std::ofstream profile_json("profile.json");
+    profile_json << EventProfiler::instance() << std::endl;
 }

@@ -60,6 +60,7 @@ SET( AIBOT_HEADERS
 	MyBotLogic/Strategies/Exploitation.h
 	MyBotLogic/Strategies/Exploration.h
 	MyBotLogic/Strategies/ScoreStrategie.h
+	MyBotLogic/Profileur.h
 )
 
 SET( AIBOT_SRC 
@@ -84,6 +85,7 @@ SET( AIBOT_SRC
 	MyBotLogic/Strategies/Exploitation.cpp
 	MyBotLogic/Strategies/Exploration.cpp
 	MyBotLogic/Strategies/ScoreStrategie.cpp
+	MyBotLogic/Profileur.cpp
 	
 	#Main
 	Main.cpp
