@@ -6,6 +6,7 @@
 #include <map>
 #include <algorithm>
 #include <chrono>
+#include <limits>
 using namespace std;
 
 Map::Map(const LevelInfo levelInfo) :
@@ -95,7 +96,7 @@ struct PathNode {
 
     PathNode(tile_id tile, uint32_t cost, uint32_t heuristic)
         : tile{ tile }
-        , previous{ Tile::INVALID_TILE_ID }
+        , previous{ std::numeric_limits<tile_id>::max() }
         , cost_so_far{ cost }
         , estimated_total_cost{ heuristic } {
 
@@ -117,7 +118,7 @@ Chemin get_path(std::vector<PathNode>&& nodes, tile_id end) {
    if (!nodes.empty() && nodes.back().tile == end) {
       PathNode& current_node = nodes.back();
 
-      while (current_node.previous != Tile::INVALID_TILE_ID) {
+      while (current_node.previous != std::numeric_limits<tile_id>::max()) {
           path.addFirst(current_node.tile);
 
          auto it = std::find_if(std::begin(nodes), std::end(nodes), [&current_node](const PathNode& node) {
