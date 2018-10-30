@@ -235,12 +235,7 @@ void GameManager::updateModel(const TurnInfo &ti) noexcept {
     post = high_resolution_clock::now();
     GameManager::Log("Durée AddObjects = " + to_string(duration_cast<microseconds>(post - pre).count() / 1000.f) + "ms");
 
-    //// Mettre à jour nos NPCs
-    //pre = std::chrono::high_resolution_clock::now();
-    //for (auto &npc : npcs) {
-    //   npc.second.floodfill(m);
-    //}
-
+    //// Mettre à jour les flux de nos NPCs
     updateFlux();
 
     post = std::chrono::high_resolution_clock::now();
@@ -326,8 +321,19 @@ void GameManager::updateFlux() noexcept {
         if (find(toErase.begin(), toErase.end(), i) == toErase.end()) {
             for (int j = i + 1; j < flux.size(); ++j) {
                 // non 0 mais indice de tuile visite ou visitable !!! A FAIRE
+                
                 vector<int> ensembleAccessible_i = getNpcById(flux[i][0]).getEnsembleAccessible();
-                if (find(ensembleAccessible_i.begin(), ensembleAccessible_i.end(), getNpcById(flux[j][0]).getEnsembleAccessible()[0]) != ensembleAccessible_i.end()) {
+                vector<int> ensembleAccessible_j = getNpcById(flux[j][0]).getEnsembleAccessible();
+                int indice_tuile = 0;
+                // Recherché une tuile visite ou visitable de notre flux
+                for (auto tileID : ensembleAccessible_j) {
+                   if (m.getTile(tileID).getStatut() == MapTile::VISITE || m.getTile(tileID).getStatut() == MapTile::VISITABLE) {
+                      indice_tuile = tileID;
+                      break;
+                   }
+                }
+                // Si cette tuile appartient à un autre flux, alors ces flux sont identiques
+                if (find(ensembleAccessible_i.begin(), ensembleAccessible_i.end(), indice_tuile) != ensembleAccessible_i.end()) {
                     toErase.push_back(j);
                     // Rejoindre un flux partagé
                     for (auto f : flux[j]) {
