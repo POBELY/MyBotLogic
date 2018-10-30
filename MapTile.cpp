@@ -12,84 +12,49 @@ MapTile::MapTile(unsigned int id, Map &m) :
     type{ Tile::ETileType::TileAttribute_Default },
     statut{ INCONNU }
 {
-	voisins.reserve(6);
+    voisins.reserve(6);
+
+    int indice{ 0 };
+    int i{ 0 };
+
+    int indices[]{ id - m.getColCount() ,id + 1 ,id + m.getColCount() ,id + m.getColCount() - 1,id - 1,id - m.getColCount() - 1,
+                   id - m.getColCount() + 1 ,id + 1 ,id + m.getColCount() + 1 ,id + m.getColCount(),id - 1,id - m.getColCount() };
+
+    bool conditionDirections[]{ (m.isInMap(indice) && y > 0) ,
+                                (m.isInMap(indice) && x < m.getColCount() - 1),
+                                (m.isInMap(indice) && y < m.getRowCount() - 1),
+                                (m.isInMap(indice) && y < m.getRowCount() - 1 && x > 0), 
+                                (m.isInMap(indice) && x > 0),
+                                (m.isInMap(indice) && y > 0 && x > 0),
+                                (m.isInMap(indice) && x < m.getColCount() - 1),
+                                (m.isInMap(indice) && x < m.getColCount() - 1) ,
+                                (m.isInMap(indice) && x < m.getColCount() - 1 && y < m.getRowCount() - 1) ,
+                                (m.isInMap(indice) && y < m.getRowCount() - 1) ,
+                                (m.isInMap(indice) && x > 0) ,
+                                (m.isInMap(indice)) };
+
+    int directions[]{ Tile::NE,Tile::E,Tile::SE,Tile::SW,Tile::W,Tile::NW };
+	
+
     // On regarde sur quelle ligne on est, car ça change les indices
-    int indice;
     if (y % 2 == 0) { // Ligne paire
                       // NE
-        indice = id - m.getColCount();
-        if (m.isInMap(indice) && y > 0) {
-            voisinsDirection[Tile::NE] = indice;
-            voisins.push_back(indice);
-        }
-        // E
-        indice = id + 1;
-        if (m.isInMap(indice) && x < m.getColCount() - 1) {
-           voisinsDirection[Tile::E] = indice;
-            voisins.push_back(indice);
-        }
-        // SE
-        indice = id + m.getColCount();
-        if (m.isInMap(indice) && y < m.getRowCount() - 1) {
-           voisinsDirection[Tile::SE] = indice;
-            voisins.push_back(indice);
-        }
-        // SW 
-        indice = id + m.getColCount() - 1;
-        if (m.isInMap(indice) && y < m.getRowCount() - 1 && x > 0) {
-           voisinsDirection[Tile::SW] = indice;
-            voisins.push_back(indice);
-        }
-        // W
-        indice = id - 1;
-        if (m.isInMap(indice) && x > 0) {
-           voisinsDirection[Tile::W] = indice;
-            voisins.push_back(indice);
-        }
-        // NW
-        indice = id - m.getColCount() - 1;
-        if (m.isInMap(indice) && y > 0 && x > 0) {
-           voisinsDirection[Tile::NW] = indice;
-           voisins.push_back(indice);
-        }
+        for (i; i < 6; ++i)
+            if(conditionDirections[i])
+            {
+                voisinsDirection[directions[i]] = indices[i];
+                voisins.push_back(voisinsDirection[directions[i]]);
+            }
     }
     else { // Ligne impaire !
            // NE
-        indice = id - m.getColCount() + 1;
-        if (m.isInMap(indice) && x < m.getColCount() - 1) {
-           voisinsDirection[Tile::NE] = indice;
-            voisins.push_back(indice);
-        }
-        // E
-        indice = id + 1;
-        if (m.isInMap(indice) && x < m.getColCount() - 1) {
-           voisinsDirection[Tile::E] = indice;
-            voisins.push_back(indice);
-        }
-        // SE
-        indice = id + m.getColCount() + 1;
-        if (m.isInMap(indice) && x < m.getColCount() - 1 && y < m.getRowCount() - 1) {
-           voisinsDirection[Tile::SE] = indice;
-            voisins.push_back(indice);
-        }
-        // SW
-        indice = id + m.getColCount();
-        if (m.isInMap(indice) && y < m.getRowCount() - 1) {
-           voisinsDirection[Tile::SW] = indice;
-            voisins.push_back(indice);
-        }
-        // W
-        indice = id - 1;
-        if (m.isInMap(indice) && x > 0) {
-           voisinsDirection[Tile::W] = indice;
-            voisins.push_back(indice);
-        }
-        // NW
-        indice = id - m.getColCount();
-        if (m.isInMap(indice)) { // Pas de conditions, c'est marrant ! :smiley:
-           voisinsDirection[Tile::NW] = indice;
-            voisins.push_back(indice);
-        }
+        for (i; i < 6; ++i)
+            if(conditionDirections[6 + i])
+            {
+                voisinsDirection[directions[i]] = indices[6 + i];
+                voisins.push_back(voisinsDirection[directions[i]]);
+            }
+            
     }
 
     voisinsVisibles = voisins;
