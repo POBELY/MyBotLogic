@@ -300,6 +300,28 @@ void GameManager::reafecterObjectifsSelonDistance() {
 
 void GameManager::updateFlux() noexcept {
     PROFILE_SCOPE("updateFlux");
+
+    // Demerger nos Flux : A TESTER
+    vector<int> toDemerge;
+    int ind;
+    for (auto &npcsID : flux) {
+       toDemerge = {};
+       ind = 0;
+       for (auto &npcID : npcsID) {
+          if (npcsID[0] != npcID && !m.aStar(getNpcById(npcsID[0]).getTileId(), getNpcById(npcID).getTileId()).isAccessible()) {
+             flux.push_back({ npcID });
+             // ReDef ensembleAccess
+             getNpcById(npcID).setEnsembleAccessible({ getNpcById(npcID).getTileId() });
+             toDemerge.push_back(ind);
+          }
+          ++ind;
+       }
+       std::reverse(toDemerge.begin(), toDemerge.end());
+       for (auto pos : toDemerge) {
+          npcsID.erase(npcsID.begin() + pos);
+       }
+    }
+
     // Mettre à jour nos Flux
     for (auto npcsID : flux) {
         vector<int> flood = getNpcById(npcsID[0]).floodfill(m);

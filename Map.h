@@ -29,8 +29,6 @@ class Map {
 
     int total_size() const noexcept { return rowCount * colCount; }
 public:
-   int compteur1 = 0;
-   int compteur2 = 0;
 
     Map() = default;
     Map(const LevelInfo);

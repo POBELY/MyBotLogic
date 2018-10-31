@@ -223,7 +223,6 @@ Chemin Map::aStar(int depart, int arrivee, float coefEvaluation) noexcept {
     vector<int> chemin = path.getChemin();
     (distancesAStar[depart])[arrivee] = chemin.size();
     (distancesAStar[arrivee])[depart] = chemin.size();
-    ++compteur2;
 
     return path;
 }
@@ -584,7 +583,6 @@ map<unsigned int, ObjectInfo> Map::getActivateurs() {
 int Map::getDistance(int tile1, int tile2) {
    int dist = getDistanceAStar(tile1,tile2);
    if (dist != -1) {
-      ++compteur1;
       return dist;
    } else {
       aStar(tile1, tile2);
