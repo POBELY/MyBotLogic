@@ -37,7 +37,7 @@ std::ostream& operator<<(std::ostream& out, const EventProfiler::Event& ev) {
 EventProfiler::EventProfiler()
 : events{}
 , initial_tp{clock::now() }{
-
+    events.reserve(4096);
 }
 
 EventProfiler& EventProfiler::instance() {

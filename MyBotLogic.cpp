@@ -65,8 +65,8 @@ MyBotLogic::MyBotLogic() :
 
 /*virtual*/ void MyBotLogic::FillActionList(TurnInfo& _turnInfo, std::vector<Action*>& _actionList)
 {
+    PROFILE_SCOPE("Turn");
     GameManager::Log("TURN =========================== " + to_string(_turnInfo.turnNb));
-    ScopedProfiler p("Turn");
 
     // On complète notre modèle avec l'information qu'on vient de découvrir !
     gm.updateModel(_turnInfo);
@@ -87,6 +87,7 @@ MyBotLogic::MyBotLogic() :
     GameManager::Log("exit");
     GameManager::LogRelease("exit");
 
+#if ENABLE_PROFILING
     std::ofstream profile_json("LocalMatchResults\\aibotlog\\profile.json");
     if(profile_json) {
         profile_json << EventProfiler::instance() << std::endl;
@@ -97,4 +98,5 @@ MyBotLogic::MyBotLogic() :
         GameManager::Log("failed to save profile.json");
         GameManager::LogRelease("failed to save profile.json");
     }
+#endif
 }

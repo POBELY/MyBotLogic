@@ -89,7 +89,7 @@ vector<Mouvement> GameManager::getAllMouvements() {
 }
 
 void GameManager::moveNpcs(vector<Action*>& actionList) noexcept {
-    ScopedProfiler p("GameManager::moveNpcs");
+    PROFILE_SCOPE("GameManager::moveNpcs");
     // TODO !
     // Il faut réordonner les chemins entre les npcs !
     // Cad que si deux Npcs peuvent échanger leurs objectifs et que cela diminue leurs chemins respectifs, alors il faut le faire !
@@ -188,7 +188,8 @@ void GameManager::gererCollisionsMemeCaseCible(vector<Mouvement>& mouvements) {
 }
 
 void GameManager::ordonnerMouvements(vector<Mouvement>& mouvements) noexcept {
-    ScopedProfiler p("GameManager::ordonnerMouvements");
+    PROFILE_SCOPE("GameManager::ordonnerMouvements");
+
     // Si deux npcs veulent aller sur la même case, alors celui qui a le plus de chemin à faire passe, et tous les autres restent sur place !
     gererCollisionsMemeCaseCible(mouvements);
 }
@@ -222,24 +223,16 @@ void GameManager::addNewObjects(TurnInfo ti) noexcept {
 }
 
 void GameManager::updateModel(const TurnInfo &ti) noexcept {
-    ScopedProfiler p("GM Update Model");
+    PROFILE_SCOPE("GM Update Model");
+
     // On essaye de rajouter les nouvelles tiles !
-    auto pre = high_resolution_clock::now();
     addNewTiles(ti);
-    auto post = high_resolution_clock::now();
-    GameManager::Log("Durée AddTile = " + to_string(duration_cast<microseconds>(post - pre).count() / 1000.f) + "ms");
 
     // On essaye de rajouter les nouvelles tiles !
-    pre = high_resolution_clock::now();
     addNewObjects(ti);
-    post = high_resolution_clock::now();
-    GameManager::Log("Durée AddObjects = " + to_string(duration_cast<microseconds>(post - pre).count() / 1000.f) + "ms");
 
-    //// Mettre à jour les flux de nos NPCs
+    // Mettre à jour les flux de nos NPCs
     updateFlux();
-
-    post = std::chrono::high_resolution_clock::now();
-    GameManager::Log("Durée FloodFill = " + to_string(std::chrono::duration_cast<std::chrono::microseconds>(post - pre).count() / 1000.f) + "ms");
 }
 
 
@@ -268,7 +261,7 @@ void GameManager::addNpc(Npc npc) {
 }
 
 void GameManager::reafecterObjectifsSelonDistance() {
-    ScopedProfiler p("GameManager::reafecterObjectifsSelonDistance");
+    PROFILE_SCOPE("GameManager::reafecterObjectifsSelonDistance");
     // Tant que l'on fait des modifications on continue ...
     bool continuer = true;
 
@@ -306,7 +299,7 @@ void GameManager::reafecterObjectifsSelonDistance() {
 }
 
 void GameManager::updateFlux() noexcept {
-
+    PROFILE_SCOPE("updateFlux");
     // Mettre à jour nos Flux
     for (auto npcsID : flux) {
         vector<int> flood = getNpcById(npcsID[0]).floodfill(m);

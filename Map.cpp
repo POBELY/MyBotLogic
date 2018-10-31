@@ -146,7 +146,7 @@ Chemin get_path(std::vector<PathNode>&& nodes, tile_id end) {
 // Par défaut sa valeur est 1. Si on l'augmente l'algorithme ira plus vite au détriment de trouver un chemin optimal.
 // Si on le diminue l'algorithme se rapproche de plus en plus d'un parcours en largeur.
 Chemin Map::aStar(int depart, int arrivee, float coefEvaluation) noexcept {
-    ScopedProfiler p("aStar");
+    PROFILE_SCOPE("aStar");
 
     std::vector<PathNode> close_nodes;
     std::vector<PathNode> open_nodes;

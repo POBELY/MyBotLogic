@@ -22,6 +22,12 @@ public:
     ~ScopedProfiler();
 };
 
+#ifdef ENABLE_PROFILING
+#define PROFILE_SCOPE(name) ScopedProfiler __scoped_profiler_ugly_name__(name)
+#else
+#define PROFILE_SCOPE(name)
+#endif
+
 class EventProfiler {
 public:
     using clock = std::chrono::high_resolution_clock;

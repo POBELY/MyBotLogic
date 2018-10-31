@@ -189,7 +189,7 @@ const vector<int>& Npc::getEnsembleAccessible() const noexcept {
 }
 
 bool Npc::isAccessibleTile(int tileId) const {
-    ScopedProfiler p("Npc::isAccessibleTile");
+    PROFILE_SCOPE("Npc::isAccessibleTile");
     return find(ensembleAccessible.begin(), ensembleAccessible.end(), tileId) != ensembleAccessible.end();
 }
 
