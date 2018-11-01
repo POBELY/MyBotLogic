@@ -35,26 +35,26 @@ MapTile::MapTile(unsigned int id, Map &m) :
 
     int directions[]{ Tile::NE,Tile::E,Tile::SE,Tile::SW,Tile::W,Tile::NW };
 	
-
     // On regarde sur quelle ligne on est, car ça change les indices
     if (y % 2 == 0) { // Ligne paire
                       // NE
-        for (i; i < 6; ++i)
+        for (i; i < 6; ++i) {
             if(conditionDirections[i])
             {
                 voisinsDirection[directions[i]] = indices[i];
                 voisins.push_back(voisinsDirection[directions[i]]);
             }
+        }
     }
     else { // Ligne impaire !
            // NE
-        for (i; i < 6; ++i)
+        for (i; i < 6; ++i) {
             if(conditionDirections[6 + i])
             {
                 voisinsDirection[directions[i]] = indices[6 + i];
                 voisins.push_back(voisinsDirection[directions[i]]);
             }
-            
+        }   
     }
 
     voisinsVisibles = voisins;
@@ -124,19 +124,19 @@ Tile::ETileType MapTile::getType() const noexcept {
     return type;
 }
 
-vector<int> MapTile::getVoisins() const noexcept {
+const vector<int>& MapTile::getVoisins() const noexcept {
     return voisins;
 }
 
-vector<int> MapTile::getVoisinsAccessibles() const noexcept {
+const vector<int>& MapTile::getVoisinsAccessibles() const noexcept {
     return voisinsAccessibles;
 }
 
-vector<int> MapTile::getVoisinsVisibles() const noexcept {
+const vector<int>& MapTile::getVoisinsVisibles() const noexcept {
     return voisinsVisibles;
 }
 
-vector<int> MapTile::getVoisinsMysterieux() const noexcept {
+const vector<int>& MapTile::getVoisinsMysterieux() const noexcept {
     return voisinsMysterious;
 }
 

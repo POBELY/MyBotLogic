@@ -65,7 +65,7 @@ bool Map::isInMap(int idTile) const noexcept {
     return idTile >= 0 && idTile < rowCount * colCount;
 }
 
-vector<unsigned int> Map::getObjectifs() const noexcept {
+const vector<unsigned int>& Map::getObjectifs() const noexcept {
     return objectifs;
 }
 
@@ -141,13 +141,7 @@ Chemin get_path(std::vector<PathNode>&& nodes, tile_id end) {
    return path;
 }
 
-
-// Il s'agit de l'algorithme AStar auquel on peut rajouter un coefficiant à l'évaluation pour modifier l'heuristique.
-// Par défaut sa valeur est 1. Si on l'augmente l'algorithme ira plus vite au détriment de trouver un chemin optimal.
-// Si on le diminue l'algorithme se rapproche de plus en plus d'un parcours en largeur.
-Chemin Map::aStar(int depart, int arrivee, float coefEvaluation) noexcept {
-    PROFILE_SCOPE("aStar");
-
+Chemin Map::aStar(int depart, int arrivee, list_voisins_fn liste_voisins) noexcept {
     std::vector<PathNode> close_nodes;
     std::vector<PathNode> open_nodes;
 
@@ -168,8 +162,7 @@ Chemin Map::aStar(int depart, int arrivee, float coefEvaluation) noexcept {
         }
 
         // For each neighbor
-        //for (const tile_id neighbor : nodes[node.tile].neighbors) {
-        for(const tile_id neighbor : current_tile.getVoisinsAccessibles()) {
+        for(const tile_id neighbor : liste_voisins(current_tile)) {
             if (neighbor == node.tile) continue; // Skip itself
 
             const unsigned int cost_to_neighbor = 1;
@@ -226,6 +219,17 @@ Chemin Map::aStar(int depart, int arrivee, float coefEvaluation) noexcept {
     ++compteur2;
 
     return path;
+}
+
+// Il s'agit de l'algorithme AStar auquel on peut rajouter un coefficiant à l'évaluation pour modifier l'heuristique.
+// Par défaut sa valeur est 1. Si on l'augmente l'algorithme ira plus vite au détriment de trouver un chemin optimal.
+// Si on le diminue l'algorithme se rapproche de plus en plus d'un parcours en largeur.
+Chemin Map::aStar(int depart, int arrivee, float coefEvaluation) noexcept {
+    PROFILE_SCOPE("aStar");
+
+    return aStar(depart, arrivee, [](const MapTile& tile) {
+        return tile.getVoisinsAccessibles();
+    });
 }
 
 Tile::ETilePosition Map::getDirection(int ind1, int ind2) const noexcept {
@@ -561,23 +565,19 @@ MapTile& Map::getTile(int id) {
     return tiles[id];
 }
 
-vector<unsigned int> Map::getObjectifs() {
-    return objectifs;
-}
-
-map<unsigned int, ObjectInfo> Map::getMurs() {
+const map<unsigned int, ObjectInfo>& Map::getMurs() const noexcept {
     return murs;
 }
 
-map<unsigned int, ObjectInfo> Map::getPortes() {
+const map<unsigned int, ObjectInfo>& Map::getPortes() const noexcept {
     return portes;
 }
 
-map<unsigned int, ObjectInfo> Map::getFenetres() {
+const map<unsigned int, ObjectInfo>& Map::getFenetres() const noexcept {
     return fenetres;
 }
 
-map<unsigned int, ObjectInfo> Map::getActivateurs() {
+const map<unsigned int, ObjectInfo>& Map::getActivateurs() const noexcept {
     return activateurs;
 }
 

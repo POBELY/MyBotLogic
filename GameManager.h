@@ -9,6 +9,7 @@
 #include "Profileur.h"
 
 #include "BehaviorTree/Composite/Selecteur.h"
+#include "GOAP/Planner.h"
 
 #include <map>
 
@@ -18,6 +19,7 @@ class npc_deja_existant {};
 class GameManager {
     static Logger logger, loggerRelease;
     std::vector<Npc> npcs;
+    goap::Planner goap_planner;
 public:
     Map m;
     Selecteur behaviorTreeManager; // Arbre de comportement du GameManager pour déterminer la stratégie à suivre
@@ -39,6 +41,7 @@ public:
 
     Npc& getNpcById(int id);
     std::vector<Npc>& getNpcs();
+    const std::vector<Npc>& getNpcs() const noexcept;
     void addNpc(Npc npc);
 
     static void Log(string str) noexcept { // Permet de débugger ! :D

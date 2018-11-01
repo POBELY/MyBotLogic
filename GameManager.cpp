@@ -233,6 +233,8 @@ void GameManager::updateModel(const TurnInfo &ti) noexcept {
 
     // Mettre à jour les flux de nos NPCs
     updateFlux();
+
+    goap_planner.plan(*this);
 }
 
 
@@ -250,6 +252,11 @@ Npc& GameManager::getNpcById(int id) {
 std::vector<Npc>& GameManager::getNpcs() {
     return npcs;
 }
+
+const std::vector<Npc>& GameManager::getNpcs() const noexcept {
+    return npcs;
+}
+
 void GameManager::addNpc(Npc npc) {
     auto it = std::find_if(npcs.begin(), npcs.end(), [searched = npc](const Npc& npc) {
         return npc.getId() == searched.getId();
