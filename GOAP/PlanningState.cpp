@@ -49,4 +49,12 @@ PlanningState::PlanningState(const GameManager& game) {
     });
 }
 
+bool PlanningState::goal_achieved() const noexcept {
+    return std::all_of(goals.begin(), goals.end(), [this](const goap::Goal& goal) {
+        return std::find_if(npcs.begin(), npcs.end(), [goal](const goap::Npc& npc) {
+            return npc.position == goal.position;
+        }) != npcs.end();
+    });
+}
+
 }

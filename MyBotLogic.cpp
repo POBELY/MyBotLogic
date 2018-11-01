@@ -76,6 +76,8 @@ MyBotLogic::MyBotLogic() :
 
     // On fait se déplacer chaque Npc vers son objectif associé =)
     gm.moveNpcs(_actionList);
+
+    gm.fin_tour();
 }
 
 /*virtual*/ void MyBotLogic::Exit()

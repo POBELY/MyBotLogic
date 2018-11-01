@@ -3,21 +3,26 @@
 
 #include "PlanningState.h"
 
+class GameManager;
+
 namespace goap {
 
 class Action {
     unsigned int npc_;
+    int cost_;
 public:
     constexpr Action(unsigned npc) noexcept
-    : npc_{npc} {}
+    : npc_{npc}
+    , cost_{0} { }
 
     unsigned int npc() const noexcept { return npc_; }
 
-    // Exposes where the npc will be after this action
-    virtual unsigned int position_effect() const = 0;
-    virtual bool win_effect() const = 0;
-
+    virtual bool is_action_possible(const GameManager& gm, const PlanningState& state) const = 0;
     virtual PlanningState apply(const PlanningState& state) const = 0;
+    virtual void update_cost(const GameManager& gm, const PlanningState& state) = 0;
+
+    int cost() const noexcept { return cost_; };
+    void set_cost(int new_cost) { cost_ = new_cost; }
 };
 
 // Requires the NPC to find a path to the destination
@@ -29,12 +34,11 @@ public:
     : Action{npc}
     , target_pos_{target} {}
 
-    unsigned int position_effect() const override { return target(); }
-    bool win_effect() const override { return false; }
-
     unsigned int target() const noexcept { return target_pos_; }
 
+    bool is_action_possible(const GameManager& gm, const PlanningState& state) const override;
     PlanningState apply(const PlanningState& state) const override;
+    void update_cost(const GameManager& gm, const PlanningState& state) override;
 };
 
 class GoToGoalAction : public GoToAction {
@@ -42,7 +46,7 @@ public:
     constexpr GoToGoalAction(unsigned int npc, unsigned int goal_tile) noexcept
     : GoToAction(npc, goal_tile) {}
 
-    bool win_effect() const override { return true; }
+    void update_cost(const GameManager& gm, const PlanningState& state) override;
 };
 
 // Requires the NPC to be next to the door
@@ -56,29 +60,31 @@ public:
 
     }
 
-    unsigned int position_effect() const override;
-    bool win_effect() const override { return false; }
-
     unsigned int door() const noexcept { return door_id_; }
+
+    bool is_action_possible(const GameManager& gm, const PlanningState& state) const override;
     PlanningState apply(const PlanningState& state) const override;
+    void update_cost(const GameManager& gm, const PlanningState& state) override;
 };
 
 // Requires the NPC to be on the plate
 // Result opens associated doors
 class PressPlateAction : public Action {
     unsigned int plate_id_;
+    bool pressed;
 public:
-    constexpr PressPlateAction(unsigned int npc, unsigned int plate) noexcept
+    constexpr PressPlateAction(unsigned int npc, unsigned int plate, bool press) noexcept
     : Action{npc}
-    , plate_id_{plate} {}
+    , plate_id_{plate}
+    , pressed{press} {
+    }
 
     unsigned int plate() const noexcept { return plate_id_; }
+    bool is_pressed() const noexcept { return pressed; }
 
-    // The action did not move the npc
-    unsigned int position_effect() const override;
-    bool win_effect() const override { return false; }
-
+    bool is_action_possible(const GameManager& gm, const PlanningState& state) const override;
     PlanningState apply(const PlanningState& state) const override;
+    void update_cost(const GameManager& gm, const PlanningState& state) override;
 };
 
 }

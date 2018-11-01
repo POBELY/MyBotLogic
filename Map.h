@@ -26,21 +26,21 @@ class Map {
     map<unsigned int, ObjectInfo> portes;
     map<unsigned int, ObjectInfo> fenetres;
     map<unsigned int, ObjectInfo> activateurs;
-    vector<vector<int>> distances; // ensemble des distances cases à cases
-    vector<vector<int>> distancesAStar; // ensemble des distances cases à case
+    mutable vector<vector<int>> distances; // ensemble des distances cases à cases
+    mutable vector<vector<int>> distancesAStar; // ensemble des distances cases à case
 
     int total_size() const noexcept { return rowCount * colCount; }
 
     using list_voisins_fn = std::function<const vector<int>&(const MapTile&)>;
 
-    Chemin aStar(int depart, int arrivee, list_voisins_fn liste_voisins) noexcept;
+    Chemin aStar(int depart, int arrivee, list_voisins_fn liste_voisins) const noexcept;
 public:
 
     Map() = default;
     Map(const LevelInfo);
     bool isInMap(int idTile) const noexcept;
 
-    Chemin aStar(int depart, int arrivee, float coefEvaluation = 1) noexcept; // Renvoie le chemin à parcourir pour aller du départ à l'arrivée
+    Chemin aStar(int depart, int arrivee, float coefEvaluation = 1) const noexcept; // Renvoie le chemin à parcourir pour aller du départ à l'arrivée
 
     float distanceL2(int depart, int arrivee) const noexcept; // Renvoie la distance L2 à vol d'oiseau !
     int distanceHex(int depart, int arrivee) const noexcept;
@@ -60,8 +60,8 @@ public:
     int getNbTiles() const noexcept;
     int getNbTilesDecouvertes() const noexcept;
     MapTile& getTile(int id);
-    int getDistance(int tile1,int tile2);
-    int getDistanceAStar(int tile1, int tile2);
+    int getDistance(int tile1,int tile2) const;
+    int getDistanceAStar(int tile1, int tile2) const;
 
     const vector<unsigned int>& getObjectifs() const noexcept;
     const map<unsigned int, ObjectInfo>& getMurs() const noexcept;

@@ -11,10 +11,12 @@ namespace goap {
 struct Npc {
     unsigned int id;
     unsigned int position;
+    bool busy;
 
     constexpr Npc(unsigned int id, unsigned int position) noexcept
     : id{ id }
-    , position{ position } {
+    , position{ position }
+    , busy{ false } {
     }
 };
 
@@ -33,14 +35,21 @@ enum class DoorState {
 
 static constexpr unsigned int INVALID_OBJECT_ID = std::numeric_limits<unsigned int>::max();
 
+enum class PlateState {
+    Pressed,
+    Released
+};
+
 struct Plate {
     unsigned int id;
     std::vector<unsigned int> associated_objects;
     unsigned int position;
+    PlateState state;
     
     Plate(unsigned int id, unsigned int position) noexcept
     : id{id}
-    , position{position} {
+    , position{position}
+    , state{PlateState::Released} {
 
     }
 };
@@ -68,6 +77,8 @@ struct PlanningState {
 
     PlanningState() = default;
     PlanningState(const GameManager& game);
+
+    bool goal_achieved() const noexcept;
 };
 
 }

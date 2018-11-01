@@ -24,7 +24,8 @@ Logger GameManager::loggerRelease{};
 
 GameManager::GameManager(LevelInfo info) :
     m{ Map(info) },
-    objectifPris{ vector<int>{} }
+    objectifPris{ vector<int>{} },
+    nb_tours_restants(info.maxTurnNb)
 {
     // On récupère l'ensemble des npcs !
     for (auto pair_npc : info.npcs) {
@@ -265,6 +266,14 @@ void GameManager::addNpc(Npc npc) {
         throw npc_deja_existant{};
 
     npcs.push_back(npc);
+}
+
+int GameManager::getNbToursRestants() const noexcept {
+    return nb_tours_restants;
+}
+
+void GameManager::fin_tour() noexcept {
+    --nb_tours_restants;
 }
 
 void GameManager::reafecterObjectifsSelonDistance() {

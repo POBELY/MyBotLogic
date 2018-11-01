@@ -141,8 +141,17 @@ Chemin get_path(std::vector<PathNode>&& nodes, tile_id end) {
    return path;
 }
 
-Chemin Map::aStar(int depart, int arrivee, list_voisins_fn liste_voisins) noexcept {
-    std::vector<PathNode> close_nodes;
+Chemin Map::aStar(int depart, int arrivee, list_voisins_fn liste_voisins) const noexcept {
+    return Chemin();
+}
+
+// Il s'agit de l'algorithme AStar auquel on peut rajouter un coefficiant à l'évaluation pour modifier l'heuristique.
+// Par défaut sa valeur est 1. Si on l'augmente l'algorithme ira plus vite au détriment de trouver un chemin optimal.
+// Si on le diminue l'algorithme se rapproche de plus en plus d'un parcours en largeur.
+Chemin Map::aStar(int depart, int arrivee, float coefEvaluation) const noexcept {
+    PROFILE_SCOPE("aStar");
+
+        std::vector<PathNode> close_nodes;
     std::vector<PathNode> open_nodes;
 
     open_nodes.reserve(total_size());
@@ -162,7 +171,7 @@ Chemin Map::aStar(int depart, int arrivee, list_voisins_fn liste_voisins) noexce
         }
 
         // For each neighbor
-        for(const tile_id neighbor : liste_voisins(current_tile)) {
+        for(const tile_id neighbor : current_tile.getVoisinsAccessibles()) {
             if (neighbor == node.tile) continue; // Skip itself
 
             const unsigned int cost_to_neighbor = 1;
@@ -218,17 +227,6 @@ Chemin Map::aStar(int depart, int arrivee, list_voisins_fn liste_voisins) noexce
     (distancesAStar[arrivee])[depart] = chemin.size();
 
     return path;
-}
-
-// Il s'agit de l'algorithme AStar auquel on peut rajouter un coefficiant à l'évaluation pour modifier l'heuristique.
-// Par défaut sa valeur est 1. Si on l'augmente l'algorithme ira plus vite au détriment de trouver un chemin optimal.
-// Si on le diminue l'algorithme se rapproche de plus en plus d'un parcours en largeur.
-Chemin Map::aStar(int depart, int arrivee, float coefEvaluation) noexcept {
-    PROFILE_SCOPE("aStar");
-
-    return aStar(depart, arrivee, [](const MapTile& tile) {
-        return tile.getVoisinsAccessibles();
-    });
 }
 
 Tile::ETilePosition Map::getDirection(int ind1, int ind2) const noexcept {
@@ -580,7 +578,7 @@ const map<unsigned int, ObjectInfo>& Map::getActivateurs() const noexcept {
     return activateurs;
 }
 
-int Map::getDistance(int tile1, int tile2) {
+int Map::getDistance(int tile1, int tile2) const {
    int dist = getDistanceAStar(tile1,tile2);
    if (dist != -1) {
       return dist;
@@ -590,7 +588,7 @@ int Map::getDistance(int tile1, int tile2) {
    }
 }
 
-int Map::getDistanceAStar(int tile1, int tile2) {
+int Map::getDistanceAStar(int tile1, int tile2) const {
    return (distancesAStar[tile1])[tile2];
 }
 

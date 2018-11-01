@@ -20,6 +20,7 @@ class GameManager {
     static Logger logger, loggerRelease;
     std::vector<Npc> npcs;
     goap::Planner goap_planner;
+    int nb_tours_restants;
 public:
     Map m;
     Selecteur behaviorTreeManager; // Arbre de comportement du GameManager pour déterminer la stratégie à suivre
@@ -43,6 +44,10 @@ public:
     std::vector<Npc>& getNpcs();
     const std::vector<Npc>& getNpcs() const noexcept;
     void addNpc(Npc npc);
+
+    int getNbToursRestants() const noexcept;
+
+    void fin_tour() noexcept;
 
     static void Log(string str) noexcept { // Permet de débugger ! :D
         #ifndef _DEBUG
