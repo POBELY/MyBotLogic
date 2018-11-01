@@ -21,6 +21,7 @@ class GameManager {
     static Logger logger, loggerRelease;
     std::vector<Npc> npcs;
     goap::Planner goap_planner;
+    int nb_tours_restants;
 public:
    Map m;
    Selecteur behaviorTreeManager; // Arbre de comportement du GameManager pour déterminer la stratégie à suivre
@@ -51,9 +52,6 @@ public:
     bool isDoorAdjacente(int interrupteurID);
 
    static void Log(string str) noexcept { // Permet de débugger ! :D
-#ifndef _DEBUG
-      return;
-#endif
 #ifdef _DEBUG
       logger.Log(str);
 #endif
@@ -62,9 +60,6 @@ public:
       loggerRelease.Log(str);
    }
    static void SetLog(string path, string fileName) noexcept { // Permet d'initialiser le logger =)
-#ifndef _DEBUG
-      return;
-#endif
 #ifdef _DEBUG
       logger.Init(path, fileName);
 #endif
@@ -72,6 +67,10 @@ public:
    static void SetLogRelease(string path, string fileName) noexcept { // Permet d'initialiser le logger =)
       loggerRelease.Init(path, fileName);
    }
+
+    int getNbToursRestants() const noexcept;
+
+    void fin_tour() noexcept;
 
 private:
    void addNewTiles(TurnInfo ti) noexcept;

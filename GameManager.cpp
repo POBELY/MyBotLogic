@@ -25,7 +25,8 @@ Logger GameManager::loggerRelease{};
 
 GameManager::GameManager(LevelInfo info) :
     m{ Map(info) },
-    objectifPris{ vector<int>{} }
+    objectifPris{ vector<int>{} },
+    nb_tours_restants(info.maxTurnNb)
 {
     floods.reserve(info.npcs.size());
     shared_floods_mapping.reserve(info.npcs.size());
@@ -289,6 +290,14 @@ void GameManager::addNpc(Npc npc) {
       throw npc_deja_existant{};
 
    npcs.push_back(npc);
+}
+
+int GameManager::getNbToursRestants() const noexcept {
+    return nb_tours_restants;
+}
+
+void GameManager::fin_tour() noexcept {
+    --nb_tours_restants;
 }
 
 void GameManager::reafecterObjectifsSelonDistance() {
