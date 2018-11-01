@@ -35,8 +35,6 @@ class Map {
 
     Chemin aStar(int depart, int arrivee, list_voisins_fn liste_voisins) noexcept;
 public:
-   int compteur1 = 0;
-   int compteur2 = 0;
 
     Map() = default;
     Map(const LevelInfo);
