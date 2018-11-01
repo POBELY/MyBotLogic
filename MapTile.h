@@ -37,7 +37,7 @@ public:
 	bool isVoisinVisible(int id) const noexcept;
 	bool isVoisinMysterious(int id) const noexcept;
 
-    bool existe();
+    bool existe() const noexcept;
 
     int getId() const noexcept;
     int getX() const noexcept;

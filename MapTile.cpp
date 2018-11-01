@@ -104,7 +104,7 @@ void MapTile::removeVisible(int id) {
     }
 }
 
-bool MapTile::existe() {
+bool MapTile::existe() const noexcept {
    return statut != MapTile::Statut::INCONNU;
 }
 
