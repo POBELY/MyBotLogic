@@ -247,16 +247,18 @@ void GameManager::addNewObjects(TurnInfo ti) noexcept {
 }
 
 void GameManager::updateModel(const TurnInfo &ti) noexcept {
-   PROFILE_SCOPE("GM Update Model");
+    PROFILE_SCOPE("GM Update Model");
 
-   // On essaye de rajouter les nouvelles tiles !
-   addNewTiles(ti);
+    // On essaye de rajouter les nouvelles tiles !
+    addNewTiles(ti);
 
-   // On essaye de rajouter les nouvelles tiles !
-   addNewObjects(ti);
+    // On essaye de rajouter les nouvelles tiles !
+    addNewObjects(ti);
 
-   // Mettre à jour les flux de nos NPCs
-   updateFlux();
+    // Mettre à jour les flux de nos NPCs
+    updateFlux();
+
+    goap_planner.plan(*this);
 }
 
 
@@ -274,6 +276,11 @@ Npc& GameManager::getNpcById(int id) {
 std::vector<Npc>& GameManager::getNpcs() {
    return npcs;
 }
+
+const std::vector<Npc>& GameManager::getNpcs() const noexcept {
+    return npcs;
+}
+
 void GameManager::addNpc(Npc npc) {
    auto it = std::find_if(npcs.begin(), npcs.end(), [searched = npc](const Npc& npc) {
       return npc.getId() == searched.getId();
@@ -426,11 +433,13 @@ void GameManager::updateFlux() noexcept {
 }
 
 bool GameManager::isDoorAdjacente(int interrupteurID) {
-   ObjectInfo interrupteur = m.getActivateurs()[interrupteurID];
+   const ObjectInfo& interrupteur = m.getActivateurs().at(interrupteurID);
    set<unsigned int> doorsID = interrupteur.connectedTo;
    for (auto doorID : doorsID) {
       // Si une porte est adjacente à notre interrupteur
-      if (m.getPortes()[doorID].tileID == interrupteur.tileID || m.getAdjacentTileAt(m.getPortes()[doorID].tileID, m.getPortes()[doorID].position) == interrupteur.tileID) {
+      if (m.getPortes().at(doorID).tileID == interrupteur.tileID 
+       || m.getAdjacentTileAt(m.getPortes().at(doorID).tileID, 
+                              m.getPortes().at(doorID).position) == interrupteur.tileID) {
          return true;
       }
    }

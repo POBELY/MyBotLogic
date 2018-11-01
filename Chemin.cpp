@@ -79,6 +79,6 @@ void Chemin::resetChemin() {
     inaccessible = false;
 }
 
-vector<int> Chemin::getChemin() const {
+const vector<int>& Chemin::getChemin() const {
    return chemin;
 }

@@ -10,6 +10,7 @@
 #include "Flood.h"
 
 #include "BehaviorTree/Composite/Selecteur.h"
+#include "GOAP/Planner.h"
 
 #include <map>
 
@@ -17,13 +18,13 @@ class npc_inexistant {};
 class npc_deja_existant {};
 
 class GameManager {
-   static Logger logger, loggerRelease;
-   std::vector<Npc> npcs;
+    static Logger logger, loggerRelease;
+    std::vector<Npc> npcs;
+    goap::Planner goap_planner;
 public:
    Map m;
    Selecteur behaviorTreeManager; // Arbre de comportement du GameManager pour déterminer la stratégie à suivre
    vector<int> objectifPris; // Permet de savoir quels sont les objectifs actuellement assignés à des npcs
-   //vector<vector<unsigned int>> flux;
    vector<std::unique_ptr<Flood>> floods;
    vector<vector<unsigned int>> shared_floods_mapping;
 
@@ -43,10 +44,11 @@ public:
       behaviorTreeManager.execute();
    };
 
-   Npc& getNpcById(int id);
-   std::vector<Npc>& getNpcs();
-   void addNpc(Npc npc);
-   bool isDoorAdjacente(int interrupteurID);
+    Npc& getNpcById(int id);
+    std::vector<Npc>& getNpcs();
+    const std::vector<Npc>& getNpcs() const noexcept;
+    void addNpc(Npc npc);
+    bool isDoorAdjacente(int interrupteurID);
 
    static void Log(string str) noexcept { // Permet de débugger ! :D
 #ifndef _DEBUG

@@ -11,7 +11,6 @@ class Chemin {
     bool inaccessible;
     vector<int> chemin;
 public:
-
     Chemin();
 
     int distance() const noexcept;
@@ -26,7 +25,7 @@ public:
     void addFirst(int); // Inverse de removeFirst, place une case supplémentaire au début du chemin
     void resetChemin(); // Réinitialise le chemin
     int getFirst() const; // Renvoie la première case du chemin
-    vector<int> getChemin() const;
+    const vector<int>& getChemin() const;
 };
 
 

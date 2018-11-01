@@ -17,7 +17,7 @@ BT_Noeud::ETAT_ELEMENT Inspection::execute() noexcept {
          const Flood* ensembleAccessible = npc.getEnsembleAccessible();
          // Prendre une porte isolée si elle est accessible
          for (auto doorID : isolatedClosedDoors) {
-            ObjectInfo object = gm.m.getPortes()[doorID];
+            ObjectInfo object = gm.m.getPortes().at(doorID);
             // On détermine les tuiles adjacente à la porte
             int goal1ID = object.tileID;
             int goal2ID = gm.m.getAdjacentTileAt(goal1ID, object.position);
