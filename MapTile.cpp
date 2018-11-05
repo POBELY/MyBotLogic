@@ -114,6 +114,16 @@ void MapTile::removeVisible(int id) {
    }
 }
 
+void MapTile::removeMurNonInspectee(int id) {
+   auto it = find(voisinsMursNonInspectee.begin(), voisinsMursNonInspectee.end(), id);
+   if (it != voisinsMursNonInspectee.end()) {
+      voisinsMursNonInspectee.erase(it);
+   }
+   if (statut == VISITE && voisinsMursNonInspectee.empty()) {
+      statut = INSPECTEE;
+   }
+}
+
 void MapTile::addMur(int id)
 {
    voisinsMurs.push_back(id);
@@ -127,10 +137,6 @@ void MapTile::setActivateur(int id)
 
 int MapTile::inspecter() {
    inspection = voisinsMursNonInspectee.back();
-   voisinsMursNonInspectee.pop_back();
-   if (voisinsMursNonInspectee.empty()) {
-      statut = INSPECTEE;
-   }
    return inspection;
 }
 

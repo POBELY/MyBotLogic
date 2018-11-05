@@ -221,7 +221,7 @@ void GameManager::addNewObjects(TurnInfo ti) noexcept {
    for (auto npc : ti.npcs) {
       for (auto objet : npc.second.visibleObjects) {
          // Si on ne connaît pas cet objet on l'ajoute
-         if (!m.objectExist(objet)) {
+         if (!m.objectExist(objet) || m.hadInteract(objet)) {
             m.addObject(ti.objects[objet]);
          }
       }

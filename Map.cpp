@@ -406,11 +406,13 @@ void Map::addObject(ObjectInfo object) noexcept {
                 tiles[voisin1].removeMysterieux(voisin2);
                 tiles[voisin1].removeAccessible(voisin2);
                 tiles[voisin1].removeVisible(voisin2);
+                tiles[voisin1].addMur(object.objectID);
             }
             if (isInMap(voisin2)) {
                 tiles[voisin2].removeMysterieux(voisin1);
                 tiles[voisin2].removeAccessible(voisin1);
                 tiles[voisin2].removeVisible(voisin1);
+                tiles[voisin2].addMur(object.objectID);
             }
         }
     }
@@ -424,21 +426,41 @@ void Map::addObject(ObjectInfo object) noexcept {
                     tiles[voisin1].removeAccessible(voisin2);
                 if (isInMap(voisin2))
                     tiles[voisin2].removeAccessible(voisin1);
-                // Porte
+            // Porte
+            } else {
+               // Porte isolée
+               if (object.connectedTo.empty()) {
+                  if (hadInteract(object.objectID)) {
+                     // Supprimer le mur du modèle
+                     murs.erase(murs.find(object.objectID));
+                     tiles[voisin1].removeMurNonInspectee(object.objectID);
+                     tiles[voisin2].removeMurNonInspectee(object.objectID);
+                  } else {
+                     // A FAIRE : Ajouter à un vecteur portes isoles
+                     if (isInMap(voisin1)) {
+                        tiles[voisin1].removeAccessible(voisin2);
+                        tiles[voisin1].removeVisible(voisin2);
+                     }
+                     if (isInMap(voisin2)) {
+                        tiles[voisin2].removeAccessible(voisin1);
+                        tiles[voisin2].removeVisible(voisin1);
+                     }
+                  }
+               
+               // Porte Connectée
+               } else {
+                  if (isInMap(voisin1)) {
+                     tiles[voisin1].removeAccessible(voisin2);
+                     tiles[voisin1].removeVisible(voisin2);
+                  }
+                  if (isInMap(voisin2)) {
+                     tiles[voisin2].removeAccessible(voisin1);
+                     tiles[voisin2].removeVisible(voisin1);
+                  }
+               }
             }
-            else {
-                if (isInMap(voisin1)) {
-                    tiles[voisin1].removeAccessible(voisin2);
-                    tiles[voisin1].removeVisible(voisin2);
-                }
-                if (isInMap(voisin2)) {
-                    tiles[voisin2].removeAccessible(voisin1);
-                    tiles[voisin2].removeVisible(voisin1);
-                }
-            }
-            // Porte ouverte
-        }
-        else {
+        // Porte ouverte
+        } else {
             // Si la porte est ouverte on est accessible ET visible ! =)
            vector<int> voisins1Accessibles = tiles[voisin1].getVoisinsAccessibles();
            if (find(voisins1Accessibles.begin(), voisins1Accessibles.end(), voisin2) == voisins1Accessibles.end()) {
@@ -613,8 +635,11 @@ int Map::getDistanceAStar(int tile1, int tile2) {
 
 bool Map::objectExist(int objet) {
    return murs.find(objet) != murs.end()
-      //|| portes.find(objet) != portes.end() // On regarde les portes à tous les tours
-      || fenetres.find(objet) != fenetres.end()
-      || activateurs.find(objet) != activateurs.end()
-      || find(interactObjects.begin(), interactObjects.end(), objet) != interactObjects.end();
+          || fenetres.find(objet) != fenetres.end()
+          || activateurs.find(objet) != activateurs.end();
+        //|| portes.find(objet) != portes.end() // On regarde les portes à tous les tours
+}
+
+bool Map::hadInteract(int objet) {
+   return find(interactObjects.begin(), interactObjects.end(), objet) != interactObjects.end(); // Si on a interagit avec cet objet au tout précédent, on le regarde à nouveau
 }

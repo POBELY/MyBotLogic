@@ -68,6 +68,7 @@ public:
     vector<int> getInteractObjects();
 
     bool objectExist(int id); // Permet de savoir si un objet existe déjà ou pas
+    bool hadInteract(int id); // Permet de savoir si on à intertagit avec cet objet au tour précédent
 };
 
 

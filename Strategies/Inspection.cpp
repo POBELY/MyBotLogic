@@ -9,7 +9,9 @@ BT_Noeud::ETAT_ELEMENT Inspection::execute() noexcept {
 
    for (auto& npc : gm.getNpcs()) {
       if (gm.m.getTile(npc.getTileId()).inspectable()) {
-         gm.m.getInteractObjects().push_back(gm.m.getTile(npc.getTileId()).inspecter());
+         // Inspecter l'objet et l'ajouter aux objets
+         gm.m.addInteractObject(gm.m.getTile(npc.getTileId()).inspecter());
+         GameManager::Log("npc " + to_string(npc.getId()) + " interact with object ");
       }
 
       else {
