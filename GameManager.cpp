@@ -277,9 +277,8 @@ void GameManager::reafecterObjectifsSelonDistance() {
                 const int objectifNpc = npc.getShortTermObjectif();
                 const int objectifAutreNpc = autreNpc.getShortTermObjectif();
 
-                const int tempsMaxChemins = std::max(npc.getChemin().distance(), autreNpc.getChemin().distance());
-                //const int tempsMaxChemins = std::max(m.getDistance(npc.getTileId(), objectifNpc),
-                                                     //m.getDistance(autreNpc.getTileId(), objectifAutreNpc));
+                //const int tempsMaxChemins = std::max(npc.getChemin().distance(), autreNpc.getChemin().distance());
+                const int tempsMaxChemins = std::max(m.getDistance(npc.getTileId(), objectifNpc), m.getDistance(autreNpc.getTileId(), objectifAutreNpc));
 
                 // Si l'interversion des objectifs est bénéfique pour l'un deux et ne coûte rien à l'autre (ou lui est aussi bénéfique)
                 if (npc.isAccessibleTile(objectifAutreNpc)
@@ -364,8 +363,16 @@ void GameManager::updateFlux() noexcept {
     for (auto i : toErase) {
         flux.erase(flux.begin() + i);
     }
+}
 
-    // A FAIRE
-    // Demerger les flux qui ne se partage plus, 
-    //calculer des AStar entre NPCs pour savoir si ils partagent des flux
+bool GameManager::isDoorAdjacente(int interrupteurID) {
+   ObjectInfo interrupteur = m.getActivateurs()[interrupteurID];
+   set<unsigned int> doorsID = interrupteur.connectedTo;
+   for (auto doorID : doorsID) {
+      // Si une porte est adjacente à notre interrupteur
+      if (m.getPortes()[doorID].tileID == interrupteur.tileID || m.getAdjacentTileAt(m.getPortes()[doorID].tileID, m.getPortes()[doorID].position) == interrupteur.tileID) {
+         return true;
+      }
+   }
+   return false;
 }

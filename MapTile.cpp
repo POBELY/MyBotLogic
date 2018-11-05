@@ -160,6 +160,10 @@ vector<int> MapTile::getVoisinsMysterieux() const noexcept {
     return voisinsMysterious;
 }
 
+int MapTile::getActivateur() const noexcept {
+   return activateur;
+}
+
 bool MapTile::isInVoisins(int id) const noexcept {
     return find(voisins.begin(), voisins.end(), id) != voisins.end();
 }

@@ -40,6 +40,7 @@ public:
     Npc& getNpcById(int id);
     std::vector<Npc>& getNpcs();
     void addNpc(Npc npc);
+    bool isDoorAdjacente(int interrupteurID);
 
     static void Log(string str) noexcept { // Permet de débugger ! :D
         #ifndef _DEBUG

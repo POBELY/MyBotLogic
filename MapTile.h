@@ -53,6 +53,7 @@ public:
     void addVoisinAccessible(int voisinID) noexcept;
     vector<int> getVoisinsVisibles() const noexcept;
     vector<int> getVoisinsMysterieux() const noexcept;
+    int getActivateur() const noexcept;
     bool isInVoisins(int id) const noexcept;
     bool isInVoisinsAccessibles(int id) const noexcept;
     bool isInVoisinsVisibles(int id) const noexcept;

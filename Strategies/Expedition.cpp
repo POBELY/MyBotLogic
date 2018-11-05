@@ -25,8 +25,8 @@ void Expedition::saveScore(MapTile tile, Npc& npc, vector<int> tilesAVisiter) no
 	score += interetTile * COEF_INTERET;
 
     // On enregistre le cout, cad la distance npc-tile
-    //score += gm.m.getDistance(npc.getTileId(),tile.getId()) * COEF_DISTANCE_NPC_TILE;
-    score += gm.m.distanceHex(npc.getTileId(), tile.getId()) * COEF_DISTANCE_NPC_TILE;
+    score += gm.m.getDistance(npc.getTileId(),tile.getId()) * COEF_DISTANCE_NPC_TILE;
+    //score += gm.m.distanceHex(npc.getTileId(), tile.getId()) * COEF_DISTANCE_NPC_TILE;
 
     // On regarde la distance moyenne de cette tile à tous les objectifs
     float distanceMoyenne = 0;
@@ -73,7 +73,10 @@ float Expedition::interet(MapTile tile) noexcept {
 
     //Score activateur
     if (tile.hadActivateur()) {
-       interet += COEF_ACTIVATEUR;
+       // Attention : cas plusieurs NPC non considéré
+       if (gm.isDoorAdjacente(tile.getActivateur())) {
+          interet += COEF_ACTIVATEUR;
+       }
     }
 
     interet += nbInconnuesAccessibles * COEF_INTERET_ACCESSIBLE;
