@@ -137,7 +137,7 @@ vector<int> Npc::floodfill(Map &m) {
 
    // Initialisation newOpen aux cases Visite et Visitable
    for (auto tileID : ensembleAccessible) {
-      if (m.getTile(tileID).getStatut() == MapTile::VISITE || m.getTile(tileID).getStatut() == MapTile::VISITABLE) {
+      if (m.getTile(tileID).getStatut() == MapTile::INSPECTEE || m.getTile(tileID).getStatut() == MapTile::VISITE || m.getTile(tileID).getStatut() == MapTile::VISITABLE) {
          newOpen.push_back(tileID);
       }
    }
