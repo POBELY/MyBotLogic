@@ -37,24 +37,18 @@ Map::Map(const LevelInfo levelInfo) :
 
     // Mettre à visiter les cases initiales des NPCs
     for (auto pair_npc : levelInfo.npcs) {
-        tiles[pair_npc.second.tileID].setStatut(MapTile::Statut::VISITE);
-        // Mettre a visitable les voisins accesible connu d'une case visité
-        for (auto voisinID : tiles[pair_npc.second.tileID].getVoisinsAccessibles()) {
-            if (tiles[voisinID].getStatut() == MapTile::Statut::CONNU) {
-                tiles[voisinID].setStatut(MapTile::Statut::VISITABLE);
-            }
-        }
-    }
-
-    // Creer matrice distance
-    distances.reserve(getNbTiles());
-    for (int i = 0; i < getNbTiles(); ++i) {
-        vector<int> v;
-        v.reserve(getNbTiles());
-        for (int j = 0; j < getNbTiles(); ++j) {
-            v.push_back(distanceHex(i, j));
-        }
-        distances.push_back(v);
+       if (tiles[pair_npc.second.tileID].getVoisinsMursNonInspecte().empty()) {
+          tiles[pair_npc.second.tileID].setStatut(MapTile::Statut::INSPECTEE);
+       }
+       else {
+          tiles[pair_npc.second.tileID].setStatut(MapTile::Statut::VISITE);
+       }
+       // Mettre a visitable les voisins accesible connu d'une case visité
+       for (auto voisinID : tiles[pair_npc.second.tileID].getVoisinsAccessibles()) {
+          if (tiles[voisinID].getStatut() == MapTile::Statut::CONNU) {
+             tiles[voisinID].setStatut(MapTile::Statut::VISITABLE);
+          }
+       }
     }
 
     // Creer matrice distancesAStar
@@ -446,15 +440,34 @@ void Map::addObject(ObjectInfo object) noexcept {
         }
         else {
             // Si la porte est ouverte on est accessible ET visible ! =)
+           vector<int> voisins1Accessibles = tiles[voisin1].getVoisinsAccessibles();
+           if (find(voisins1Accessibles.begin(), voisins1Accessibles.end(), voisin2) == voisins1Accessibles.end()) {
+              tiles[voisin1].addVoisinAccessible(voisin2);
+              tiles[voisin2].addVoisinAccessible(voisin1);
+           }
+           vector<int> voisins1Visibles = tiles[voisin1].getVoisinsVisibles();
+           if (find(voisins1Visibles.begin(), voisins1Visibles.end(), voisin2) == voisins1Visibles.end()) {
+              tiles[voisin1].addVoisinVisible(voisin2);
+              tiles[voisin2].addVoisinVisible(voisin1);
+           }
         }
     }
     if (object.objectTypes.find(Object::ObjectType_PressurePlate) != object.objectTypes.end()) {
         activateurs[object.objectID] = object;
+        tiles[voisin1].setActivateur(object.objectID);
         // prout !
     }
 
     // On le note !
     GameManager::Log("Decouverte de l'objet " + to_string(object.objectID) + " sur la tuile " + to_string(object.tileID) + " orienté en " + to_string(object.position));
+}
+
+void Map::addInteractObject(int objectID) {
+   interactObjects.push_back(objectID);
+}
+
+void Map::viderInteractObjects() {
+   interactObjects = {};
 }
 
 int Map::getX(int id) const noexcept {
@@ -580,6 +593,10 @@ map<unsigned int, ObjectInfo> Map::getActivateurs() {
     return activateurs;
 }
 
+vector<int> Map::getInteractObjects() {
+   return interactObjects;
+}
+
 int Map::getDistance(int tile1, int tile2) {
    int dist = getDistanceAStar(tile1,tile2);
    if (dist != -1) {
@@ -595,8 +612,9 @@ int Map::getDistanceAStar(int tile1, int tile2) {
 }
 
 bool Map::objectExist(int objet) {
-    return murs.find(objet) != murs.end()
-        || portes.find(objet) != portes.end()
-        || fenetres.find(objet) != fenetres.end()
-        || activateurs.find(objet) != activateurs.end();
+   return murs.find(objet) != murs.end()
+      //|| portes.find(objet) != portes.end() // On regarde les portes à tous les tours
+      || fenetres.find(objet) != fenetres.end()
+      || activateurs.find(objet) != activateurs.end()
+      || find(interactObjects.begin(), interactObjects.end(), objet) != interactObjects.end();
 }

@@ -24,8 +24,8 @@ class Map {
     map<unsigned int, ObjectInfo> portes;
     map<unsigned int, ObjectInfo> fenetres;
     map<unsigned int, ObjectInfo> activateurs;
-    vector<vector<int>> distances; // ensemble des distances cases à cases
     vector<vector<int>> distancesAStar; // ensemble des distances cases à case
+    vector<int> interactObjects; // ensemble des objets avec lesquels on a interagit au tour précédent
 
     int total_size() const noexcept { return rowCount * colCount; }
 public:
@@ -45,6 +45,8 @@ public:
 
     void addTile(TileInfo) noexcept; // Permet de rajouter une tile à la map
     void addObject(ObjectInfo) noexcept; // Permet de rajouter un object à la map
+    void addInteractObject(int objectID);
+    void viderInteractObjects();
 
     int getX(int id) const noexcept; // Permet de récupérer x et y à partir d'un indice
     int getY(int id) const noexcept;
@@ -63,6 +65,7 @@ public:
     map<unsigned int, ObjectInfo> getPortes();
     map<unsigned int, ObjectInfo> getFenetres();
     map<unsigned int, ObjectInfo> getActivateurs();
+    vector<int> getInteractObjects();
 
     bool objectExist(int id); // Permet de savoir si un objet existe déjà ou pas
 };
