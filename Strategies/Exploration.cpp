@@ -63,6 +63,11 @@ float Exploration::interet(MapTile tile) noexcept {
         }
     }
 
+    //Score activateur
+    if (tile.hadActivateur()) {
+       interet += COEF_ACTIVATEUR;
+    }
+
     interet += nbInconnuesAccessibles * COEF_INTERET_ACCESSIBLE;
     interet += nbInconnuesNonAccessiblesMaisVisibles * COEF_INTERET_INACCESSIBLE_MAIS_VISIBLE;
 

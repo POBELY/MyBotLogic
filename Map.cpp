@@ -276,95 +276,106 @@ int Map::distanceHex(int tile1ID, int tile2ID) const noexcept {
 }
 
 int Map::tailleCheminMax() const noexcept {
-    return colCount * rowCount + 1;
+   return colCount * rowCount + 1;
 }
 
 // Il ne faut pas ajouter une tile qui est déjà dans la map !
 void Map::addTile(TileInfo tile) noexcept {
-    // On met à jour le nombre de tiles
-    ++nbTilesDecouvertes;
+   // On met à jour le nombre de tiles
+   ++nbTilesDecouvertes;
 
-    // On la rajoute aux tiles
-    tiles[tile.tileID].setTileDecouverte(tile);
+   // On la rajoute aux tiles
+   tiles[tile.tileID].setTileDecouverte(tile);
 
-    if (tiles[tile.tileID].getType() == Tile::TileAttribute_Goal) {
-        objectifs.push_back(tile.tileID);
-    }
+   if (tiles[tile.tileID].getType() == Tile::TileAttribute_Goal) {
+      objectifs.push_back(tile.tileID);
+   }
 
-    if (tiles[tile.tileID].getType() == Tile::TileAttribute_Forbidden) {
-        for (auto voisin : tiles[tile.tileID].getVoisins()) {
-            tiles[voisin].removeAccessible(tile.tileID);
-        }
-    }
+   if (tiles[tile.tileID].getType() == Tile::TileAttribute_Forbidden) {
+      for (auto voisin : tiles[tile.tileID].getVoisins()) {
+         tiles[voisin].removeAccessible(tile.tileID);
+      }
+   }
 
-    // Puis on met à jour les voisins de ses voisins ! :D
-    for (auto voisin : tiles[tile.tileID].getVoisins()) { // On pourrait parcourir les voisinsVisibles
-        // Si ce voisin l'a en voisin mystérieux, on le lui enlève
-        tiles[voisin].removeMysterieux(tile.tileID);
-    }
+   // Puis on met à jour les voisins de ses voisins ! :D
+   for (auto voisin : tiles[tile.tileID].getVoisins()) { // On pourrait parcourir les voisinsVisibles
+       // Si ce voisin l'a en voisin mystérieux, on le lui enlève
+      tiles[voisin].removeMysterieux(tile.tileID);
+   }
 
-    // On le note !
-    GameManager::Log("Decouverte de la tile " + to_string(tile.tileID));
+   // On le note !
+   GameManager::Log("Decouverte de la tile " + to_string(tile.tileID));
 }
 
 // Il ne faut pas ajouter un objet qui est déjà dans la map !
 void Map::addObject(ObjectInfo object) noexcept {
-    int voisin1 = object.tileID;
-	int voisin2 = getAdjacentTileAt(object.tileID, object.position);
+   int voisin1 = object.tileID;
+   int voisin2 = getAdjacentTileAt(object.tileID, object.position);
 
-    // On ajoute notre objet à l'ensemble de nos objets
-    if (object.objectTypes.find(Object::ObjectType_Wall) != object.objectTypes.end()) {
-       // Fenetre
-       if (object.objectTypes.find(Object::ObjectType_Window) != object.objectTypes.end()) {
-          fenetres[object.objectID] = object;
-          if (isInMap(voisin1))
-             tiles[voisin1].removeAccessible(voisin2);
-          if (isInMap(voisin2))
-             tiles[voisin2].removeAccessible(voisin1);
-       // Mur
-       } else {
-          murs[object.objectID] = object;
-          if (isInMap(voisin1)) {
-             tiles[voisin1].removeMysterieux(voisin2);
-             tiles[voisin1].removeAccessible(voisin2);
-             tiles[voisin1].removeVisible(voisin2);
-          }
-          if (isInMap(voisin2)) {
-             tiles[voisin2].removeMysterieux(voisin1);
-             tiles[voisin2].removeAccessible(voisin1);
-             tiles[voisin2].removeVisible(voisin1);
-          }
-       }
-    }
-    if (object.objectTypes.find(Object::ObjectType_Door) != object.objectTypes.end()) {
-        portes[object.objectID] = object;
-        //Porte Ferme
-        if (object.objectStates.find(Object::ObjectState_Closed) != object.objectStates.end()) {
-           // Porte Fenetre
-           if (object.objectTypes.find(Object::ObjectType_Window) != object.objectTypes.end()) {
-              if (isInMap(voisin1))
-                 tiles[voisin1].removeAccessible(voisin2);
-              if (isInMap(voisin2))
-                 tiles[voisin2].removeAccessible(voisin1);
+   // On ajoute notre objet à l'ensemble de nos objets
+   if (object.objectTypes.find(Object::ObjectType_Wall) != object.objectTypes.end()) {
+      // Fenetre
+      if (object.objectTypes.find(Object::ObjectType_Window) != object.objectTypes.end()) {
+         fenetres[object.objectID] = object;
+         if (isInMap(voisin1))
+            tiles[voisin1].removeAccessible(voisin2);
+         if (isInMap(voisin2))
+            tiles[voisin2].removeAccessible(voisin1);
+         // Mur
+      }
+      else {
+         murs[object.objectID] = object;
+         if (isInMap(voisin1)) {
+            tiles[voisin1].removeMysterieux(voisin2);
+            tiles[voisin1].removeAccessible(voisin2);
+            tiles[voisin1].removeVisible(voisin2);
+            tiles[voisin1].addMur(object.objectID);
+         }
+         if (isInMap(voisin2)) {
+            tiles[voisin2].removeMysterieux(voisin1);
+            tiles[voisin2].removeAccessible(voisin1);
+            tiles[voisin2].removeVisible(voisin1);
+            tiles[voisin2].addMur(object.objectID);
+         }
+      }
+   }
+   if (object.objectTypes.find(Object::ObjectType_Door) != object.objectTypes.end()) {
+      portes[object.objectID] = object;
+      //Porte Ferme
+      if (object.objectStates.find(Object::ObjectState_Closed) != object.objectStates.end()) {
+         // Porte Fenetre
+         if (object.objectTypes.find(Object::ObjectType_Window) != object.objectTypes.end()) {
+            if (isInMap(voisin1))
+               tiles[voisin1].removeAccessible(voisin2);
+            if (isInMap(voisin2))
+               tiles[voisin2].removeAccessible(voisin1);
             // Porte
-           } else {
-              if (isInMap(voisin1)) {
-                 tiles[voisin1].removeAccessible(voisin2);
-                 tiles[voisin1].removeVisible(voisin2);
-              }
-              if (isInMap(voisin2)) {
-                 tiles[voisin2].removeAccessible(voisin1);
-                 tiles[voisin2].removeVisible(voisin1);
-              }
-           }
-           // Porte ouverte
-        } else {
+         }
+         else {
+            if (isInMap(voisin1)) {
+               tiles[voisin1].removeAccessible(voisin2);
+               tiles[voisin1].removeVisible(voisin2);
+            }
+            if (isInMap(voisin2)) {
+               tiles[voisin2].removeAccessible(voisin1);
+               tiles[voisin2].removeVisible(voisin1);
+            }
+         }
+         // Porte ouverte
+      }
+      else {
+         vector<int> voisins1Accessibles = tiles[voisin1].getVoisinsAccessibles();
+         if (find(voisins1Accessibles.begin(), voisins1Accessibles.end(), voisin2) == voisins1Accessibles.end()) {
+            tiles[voisin1].addVoisinAccessible(voisin2);
+            tiles[voisin2].addVoisinAccessible(voisin1);
+         }
+
            // Si la porte est ouverte on est accessible ET visible ! =)
         }
     }
     if (object.objectTypes.find(Object::ObjectType_PressurePlate) != object.objectTypes.end()) {
         activateurs[object.objectID] = object;
-        // prout !
+        tiles[voisin1].setActivateur(object.objectID);
     }
     
     // On le note !
@@ -463,7 +474,7 @@ int Map::getDistance(int tile1, int tile2) {
 
 bool Map::objectExist(int objet) {
     return murs.find(objet) != murs.end()
-        || portes.find(objet) != portes.end()
+        //|| portes.find(objet) != portes.end() // On regarde les portes à tous les tours
         || fenetres.find(objet) != fenetres.end()
         || activateurs.find(objet) != activateurs.end();
 }

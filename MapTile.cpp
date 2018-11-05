@@ -79,6 +79,11 @@ bool MapTile::isVoisinMysterious(int id) const noexcept {
 	return std::find(voisinsMysterious.begin(), voisinsMysterious.end(), id) != voisinsMysterious.end();
 }
 
+bool MapTile::hadActivateur() const noexcept
+{
+   return activateur != -1;
+}
+
 int MapTile::getVoisinByDirection(Tile::ETilePosition direction) const noexcept {
    return voisinsDirection[direction];
 }
@@ -102,6 +107,16 @@ void MapTile::removeVisible(int id) {
     if (it != voisinsVisibles.end()) {
         voisinsVisibles.erase(it);
     }
+}
+
+void MapTile::addMur(int id)
+{
+   voisinsMurs.push_back(id);
+}
+
+void MapTile::setActivateur(int id)
+{
+   activateur = id;
 }
 
 bool MapTile::existe() {
@@ -132,6 +147,11 @@ vector<int> MapTile::getVoisinsAccessibles() const noexcept {
     return voisinsAccessibles;
 }
 
+void MapTile::addVoisinAccessible(int voisinID) noexcept {
+   voisinsAccessibles.push_back(voisinID);
+}
+
+
 vector<int> MapTile::getVoisinsVisibles() const noexcept {
     return voisinsVisibles;
 }
@@ -155,7 +175,6 @@ bool MapTile::isInVoisinsVisibles(int id) const noexcept {
 bool MapTile::isInVoisinsMysterieux(int id) const noexcept {
     return find(voisinsMysterious.begin(), voisinsMysterious.end(), id) != voisinsMysterious.end();
 }
-
 
 MapTile::Statut MapTile::getStatut() const noexcept {
     return statut;
