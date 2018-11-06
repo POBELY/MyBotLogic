@@ -23,6 +23,12 @@ void Npc::move(Tile::ETilePosition direction, Map &m) noexcept {
    else {
       m.getTile(tileId).setStatut(MapTile::Statut::VISITE);
    }
+   // Mettre a visitable les voisins accesible connu d'une case visité
+   for (auto voisinID : m.getTile(tileId).getVoisinsAccessibles()) {
+      if (m.getTile(voisinID).getStatut() == MapTile::Statut::CONNU) {
+         m.getTile(voisinID).setStatut(MapTile::Statut::VISITABLE);
+      }
+   }
 }
 
 void Npc::resetChemins() noexcept {

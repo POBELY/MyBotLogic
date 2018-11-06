@@ -89,6 +89,11 @@ bool MapTile::hadInspection() const noexcept
    return inspection != -1;
 }
 
+bool MapTile::hadDoors() const noexcept
+{
+   return door != -1;
+}
+
 int MapTile::getVoisinByDirection(Tile::ETilePosition direction) const noexcept {
    return voisinsDirection[direction];
 }
@@ -126,8 +131,11 @@ void MapTile::removeMurNonInspectee(int id) {
 
 void MapTile::addMur(int id)
 {
-   voisinsMurs.push_back(id);
-   voisinsMursNonInspectee.push_back(id);
+   auto it = find(voisinsMurs.begin(), voisinsMurs.end(), id);
+   if (it == voisinsMurs.end()) {
+      voisinsMurs.push_back(id);
+      voisinsMursNonInspectee.push_back(id);
+   }
 }
 
 void MapTile::setActivateur(int id)
@@ -138,6 +146,10 @@ void MapTile::setActivateur(int id)
 int MapTile::inspecter() {
    inspection = voisinsMursNonInspectee.back();
    return inspection;
+}
+
+void MapTile::ouvrirPorte(int doorID) {
+   door = doorID;
 }
 
 bool MapTile::existe() {
@@ -196,6 +208,12 @@ int MapTile::getActivateur() const noexcept {
 int MapTile::getInspection() noexcept {
    int res = inspection;
    inspection = -1;
+   return res;
+}
+
+int MapTile::getDoor() noexcept {
+   int res = door;
+   door = -1;
    return res;
 }
 

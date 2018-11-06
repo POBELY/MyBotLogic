@@ -401,6 +401,15 @@ void Map::addObject(ObjectInfo object) noexcept {
             // Mur
         }
         else {
+           if (hadInteract(object.objectID)) {
+              if (isInMap(voisin1)) {
+                 tiles[voisin1].removeMurNonInspectee(object.objectID);
+              }
+              if (isInMap(voisin2)) {
+                 tiles[voisin2].removeMurNonInspectee(object.objectID);
+              }
+           }
+
             murs[object.objectID] = object;
             if (isInMap(voisin1)) {
                 tiles[voisin1].removeMysterieux(voisin2);
@@ -430,13 +439,18 @@ void Map::addObject(ObjectInfo object) noexcept {
             } else {
                // Porte isolée
                if (object.connectedTo.empty()) {
+                  isolatedClosedDoors.push_back(object.objectID);
                   if (hadInteract(object.objectID)) {
                      // Supprimer le mur du modèle
                      murs.erase(murs.find(object.objectID));
-                     tiles[voisin1].removeMurNonInspectee(object.objectID);
-                     tiles[voisin2].removeMurNonInspectee(object.objectID);
+                     if (isInMap(voisin1)) {
+                        tiles[voisin1].removeMurNonInspectee(object.objectID);
+                     }
+                     if (isInMap(voisin2)) {
+                        tiles[voisin2].removeMurNonInspectee(object.objectID);
+                     }
                   } else {
-                     // A FAIRE : Ajouter à un vecteur portes isoles
+                     
                      if (isInMap(voisin1)) {
                         tiles[voisin1].removeAccessible(voisin2);
                         tiles[voisin1].removeVisible(voisin2);
@@ -461,7 +475,11 @@ void Map::addObject(ObjectInfo object) noexcept {
             }
         // Porte ouverte
         } else {
-            // Si la porte est ouverte on est accessible ET visible ! =)
+           // Si on vient d'ouvrir la porte, on la suprime des portes isolés fermés
+           if (hadInteract(object.objectID)) {
+              isolatedClosedDoors.erase(find(isolatedClosedDoors.begin(), isolatedClosedDoors.end(), object.objectID));
+           }
+           // Si la porte est ouverte on est accessible ET visible ! =)
            vector<int> voisins1Accessibles = tiles[voisin1].getVoisinsAccessibles();
            if (find(voisins1Accessibles.begin(), voisins1Accessibles.end(), voisin2) == voisins1Accessibles.end()) {
               tiles[voisin1].addVoisinAccessible(voisin2);
@@ -617,6 +635,10 @@ map<unsigned int, ObjectInfo> Map::getActivateurs() {
 
 vector<int> Map::getInteractObjects() {
    return interactObjects;
+}
+
+vector<int> Map::getIsolatedClosedDoors() {
+   return isolatedClosedDoors;
 }
 
 int Map::getDistance(int tile1, int tile2) {

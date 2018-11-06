@@ -26,6 +26,7 @@ class Map {
     map<unsigned int, ObjectInfo> activateurs;
     vector<vector<int>> distancesAStar; // ensemble des distances cases à case
     vector<int> interactObjects; // ensemble des objets avec lesquels on a interagit au tour précédent
+    vector<int> isolatedClosedDoors; // ensemble des portes sans interrupteurs
 
     int total_size() const noexcept { return rowCount * colCount; }
 public:
@@ -66,6 +67,7 @@ public:
     map<unsigned int, ObjectInfo> getFenetres();
     map<unsigned int, ObjectInfo> getActivateurs();
     vector<int> getInteractObjects();
+    vector<int> getIsolatedClosedDoors();
 
     bool objectExist(int id); // Permet de savoir si un objet existe déjà ou pas
     bool hadInteract(int id); // Permet de savoir si on à intertagit avec cet objet au tour précédent
