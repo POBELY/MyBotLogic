@@ -114,32 +114,29 @@ void ajoutIfUnkown(Map &m, int voisin, const vector<int>& oldOpen, const vector<
    }
 }
 
-void addNewVoisins(Map &m, int tileID, const vector<int>& oldOpen, vector<int>& Open, vector<int>& newOpen, map<int, int>& coutCasesAccessibles, int cout) {
+void addNewVoisins(Map &m, int tileID, const vector<int>& oldOpen, vector<int>& Open, vector<int>& newOpen) {
    for (auto voisin : m.getTile(tileID).getVoisinsAccessibles()) {
       ajoutIfUnkown(m, voisin, oldOpen, Open, newOpen);
    }
    // On définit les dernières tuiles ajoutés avec leur coût courant
    if (find(Open.begin(), Open.end(), tileID) == Open.end()) {
       Open.push_back(tileID);
-      coutCasesAccessibles[tileID] = cout;
    }
 }
 
-void parcourirNewVoisins(Map &m, int tileID, vector<int>& oldOpen, vector<int>& Open, vector<int>& newOpen, map<int, int>& coutCasesAccessibles, int& cout) {
+void parcourirNewVoisins(Map &m, int tileID, vector<int>& oldOpen, vector<int>& Open, vector<int>& newOpen) {
    oldOpen = newOpen;
    newOpen = vector<int>();
    // On regarde les voisins des dernieres tuiles ajoutées
    for (int tileID : oldOpen) {
-      addNewVoisins(m, tileID, oldOpen, Open, newOpen, coutCasesAccessibles, cout);
+      addNewVoisins(m, tileID, oldOpen, Open, newOpen);
    }
-   cout++;
 }
 
 vector<int> Npc::floodfill(Map &m) {
    vector<int> Open;
    vector<int> oldOpen;
    vector<int> newOpen;
-   map<int, int> coutCasesAccessibles;
 
    // Initialisation newOpen aux cases Visite et Visitable
    for (auto tileID : ensembleAccessible) {
@@ -148,15 +145,30 @@ vector<int> Npc::floodfill(Map &m) {
       }
    }
 
-   int cout = 0;
    // Tant qu'il reste des noeuds à traiter ...
    while (!newOpen.empty()) {
-      parcourirNewVoisins(m, tileId, oldOpen, Open, newOpen, coutCasesAccessibles, cout);
+      parcourirNewVoisins(m, tileId, oldOpen, Open, newOpen);
    }
 
    // On met à jour l'ensemble et les distances accessible d'un NPC
    ensembleAccessible = Open;
    return Open;
+}
+
+void Npc::inspectWall(int wallID) {
+   interactWall = wallID;
+}
+
+void Npc::openDoor(int doorID) {
+   interactDoor = doorID;
+}
+
+bool Npc::hadInspection() const noexcept {
+   return interactWall != -1;
+}
+
+bool Npc::hadOpenDoor() const noexcept {
+   return interactDoor != -1;
 }
 
 int Npc::getId() const noexcept {
@@ -173,6 +185,18 @@ int Npc::getShortTermObjectif() const noexcept {
 
 int Npc::getTileObjectif() const noexcept {
    return tileObjectif;
+}
+
+int Npc::getInteractWall() noexcept {
+   int res = interactWall;
+   interactWall = -1;
+   return res;
+}
+
+int Npc::getInteractDoor() noexcept {
+   int res = interactDoor;
+   interactDoor = -1;
+   return res;
 }
 
 void Npc::setTileObjectif(int idTile) {

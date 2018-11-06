@@ -15,7 +15,9 @@ BT_Noeud::ETAT_ELEMENT Inspection::execute() noexcept {
          // On inspecte les murs
          if (gm.m.getTile(npc.getTileId()).inspectable()) {
             // Inspecter l'objet et l'ajouter aux objets
-            gm.m.addInteractObject(gm.m.getTile(npc.getTileId()).inspecter());
+            int wall2InteractID = gm.m.getTile(npc.getTileId()).inspecter();
+            npc.inspectWall(wall2InteractID);
+            gm.m.addInteractObject(wall2InteractID);
             GameManager::Log("npc " + to_string(npc.getId()) + " interact with object ");
          }
 
@@ -34,7 +36,7 @@ BT_Noeud::ETAT_ELEMENT Inspection::execute() noexcept {
          int goal2ID = gm.m.getAdjacentTileAt(goal1ID, object.position);
          // Si on est devant la porte, on interagit
          if (npc.getTileId() == goal1ID || npc.getTileId() == goal2ID) {
-            gm.m.getTile(npc.getTileId()).ouvrirPorte(objectID);
+            npc.openDoor(objectID);
             gm.m.addInteractObject(objectID);
          } // Sinon on regarde si ces tuiles sont accessibles et on y va
          else {

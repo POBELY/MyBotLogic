@@ -25,8 +25,6 @@ private:
    vector<int> voisinsMursNonInspectee; //ce sont les murs entourant la Tile
    int activateur = -1;
    Statut statut;
-   int inspection = -1;
-   int door = -1;
 
 public:
    MapTile() = default; // Constructeur par défaut obligatoire pour pouvoir utiliser tuple ...
@@ -40,15 +38,12 @@ public:
    void addMur(int id);
    void setActivateur(int id);
    int inspecter();
-   void ouvrirPorte(int doorID);
 
    int getVoisinByDirection(Tile::ETilePosition direction) const noexcept; // Permet de récupérer le voisin dans une certaine direction d'une tile
    bool isVoisinAccessible(int id) const noexcept;
    bool isVoisinVisible(int id) const noexcept;
    bool isVoisinMysterious(int id) const noexcept;
    bool hadActivateur() const noexcept;
-   bool hadInspection() const noexcept;
-   bool hadDoors() const noexcept;
 
    bool existe();
    bool inspectable();
@@ -64,8 +59,6 @@ public:
    vector<int> getVoisinsVisibles() const noexcept;
    vector<int> getVoisinsMysterieux() const noexcept;
    int getActivateur() const noexcept;
-   int getInspection() noexcept;
-   int getDoor() noexcept;
    vector<int> getVoisinsMursNonInspecte();
    bool isInVoisins(int id) const noexcept;
    bool isInVoisinsAccessibles(int id) const noexcept;

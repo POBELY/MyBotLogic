@@ -123,11 +123,11 @@ void GameManager::moveNpcs(vector<Action*>& actionList) noexcept {
             npc.setArrived(false);
          }
       }
-      else if (m.getTile(npc.getTileId()).hadInspection()) {
-         actionList.push_back(new Interact(npc.getId(), m.getTile(npc.getTileId()).getInspection(), Interact::EInteraction::Interaction_SearchHiddenDoor));
+      else if (npc.hadInspection()) {
+         actionList.push_back(new Interact(npc.getId(), npc.getInteractWall(), Interact::EInteraction::Interaction_SearchHiddenDoor));
       }
-      else if (m.getTile(npc.getTileId()).hadDoors()) {
-         actionList.push_back(new Interact(npc.getId(), m.getTile(npc.getTileId()).getDoor(), Interact::EInteraction::Interaction_OpenDoor));
+      else if (npc.hadOpenDoor()) {
+         actionList.push_back(new Interact(npc.getId(), npc.getInteractDoor(), Interact::EInteraction::Interaction_OpenDoor));
       }
    }
 }
