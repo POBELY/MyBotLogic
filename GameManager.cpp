@@ -43,8 +43,8 @@ void GameManager::InitializeBehaviorTree() noexcept {
    ObjectifsForAllNpcs *objectifs = new ObjectifsForAllNpcs(*this);
    CheminsForAllNpcs *chemins = new CheminsForAllNpcs(*this);
    Exploitation *exploitation = new Exploitation(*this);
-   ScoreStrategie *expedition = new Expedition(*this, "Expedition");
-   ScoreStrategie *exploration = new Exploration(*this, "Exploration");
+   ScoreStrategie *expedition = new Expedition(*this);
+   ScoreStrategie *exploration = new Exploration(*this);
    Inspection *inspection = new Inspection(*this);
 
    Sequenceur *sequenceur1 = new Sequenceur({ chemins, exploitation });
@@ -228,6 +228,11 @@ void GameManager::addNewObjects(TurnInfo ti) noexcept {
             m.addObject(ti.objects[objet]);
          }
       }
+      // Mettre à jour l'état de la tuile du npc
+      if (m.getTile(npc.second.tileID).getVoisinsMursNonInspecte().empty()) {
+         m.getTile(npc.second.tileID).setStatut(MapTile::INSPECTEE);
+      }
+
    }
    m.viderInteractObjects();
 }

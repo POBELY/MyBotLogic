@@ -35,6 +35,7 @@ public:
    void removeAccessible(int id);
    void removeVisible(int id);
    void removeMurNonInspectee(int id);
+   void removeMur(int id);
    void addMur(int id);
    void setActivateur(int id);
    int inspecter();

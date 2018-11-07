@@ -17,12 +17,7 @@ Npc::Npc(const NPCInfo info) :
 
 void Npc::move(Tile::ETilePosition direction, Map &m) noexcept {
    tileId = m.getAdjacentTileAt(tileId, direction);
-   if (m.getTile(tileId).getVoisinsMursNonInspecte().empty()) {
-      m.getTile(tileId).setStatut(MapTile::Statut::INSPECTEE);
-   }
-   else {
-      m.getTile(tileId).setStatut(MapTile::Statut::VISITE);
-   }
+   m.getTile(tileId).setStatut(MapTile::Statut::VISITE);
    // Mettre a visitable les voisins accesible connu d'une case visité
    for (auto voisinID : m.getTile(tileId).getVoisinsAccessibles()) {
       if (m.getTile(voisinID).getStatut() == MapTile::Statut::CONNU) {

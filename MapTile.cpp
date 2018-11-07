@@ -119,6 +119,13 @@ void MapTile::removeMurNonInspectee(int id) {
    }
 }
 
+void MapTile::removeMur(int id) {
+   auto it = find(voisinsMurs.begin(), voisinsMurs.end(), id);
+   if (it != voisinsMurs.end()) {
+      voisinsMurs.erase(it);
+   }
+}
+
 void MapTile::addMur(int id)
 {
    auto it = find(voisinsMurs.begin(), voisinsMurs.end(), id);

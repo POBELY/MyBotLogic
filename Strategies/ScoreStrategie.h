@@ -8,8 +8,8 @@ class ScoreStrategie : public BT_Feuille {
 protected:
     GameManager &gm;
     string nom;
-    void calculerScoresTilesPourNpc(Npc& npc, vector<int> tilesAVisiter) noexcept;
-    void calculerScore1Tile(int tileID, Map& m, Npc& npc, const vector<int> tilesAVisiter);
+    virtual void calculerScoresTilesPourNpc(Npc& npc, vector<int> tilesAVisiter) noexcept;
+    virtual void calculerScore1Tile(int tileID, Map& m, Npc& npc, const vector<int> tilesAVisiter);
 
 public:
     ScoreStrategie(GameManager&, string nom);

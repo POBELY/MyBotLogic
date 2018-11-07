@@ -1,8 +1,8 @@
 
 #include "Expedition.h"
 
-Expedition::Expedition(GameManager& gm, string nom)
-   : ScoreStrategie(gm, nom)
+Expedition::Expedition(GameManager& gm)
+   : ScoreStrategie(gm, "Expedition")
 {
 }
 

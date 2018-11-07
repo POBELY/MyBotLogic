@@ -3,8 +3,8 @@
 #include "MyBotLogic/BehaviorTree/BT_Noeud.h"
 #include "MyBotLogic/GameManager.h"
 
-Exploration::Exploration(GameManager& gm, string nom)
-   : ScoreStrategie(gm, nom)
+Exploration::Exploration(GameManager& gm)
+   : ScoreStrategie(gm, "Exploration")
 {
 }
 

@@ -398,7 +398,7 @@ void Map::addObject(ObjectInfo object) noexcept {
                 tiles[voisin1].removeAccessible(voisin2);
             if (isInMap(voisin2))
                 tiles[voisin2].removeAccessible(voisin1);
-            // Mur
+        // Mur
         }
         else {
            if (hadInteract(object.objectID)) {
@@ -439,15 +439,19 @@ void Map::addObject(ObjectInfo object) noexcept {
             } else {
                // Porte isolée
                if (object.connectedTo.empty()) {
-                  isolatedClosedDoors.push_back(object.objectID);
-                  if (hadInteract(object.objectID)) {
+                  if (find(isolatedClosedDoors.begin(), isolatedClosedDoors.end(), object.objectID) == isolatedClosedDoors.end()) {
+                     isolatedClosedDoors.push_back(object.objectID);
+                  }
+                  if (hadInteract(object.objectID) && (murs.find(object.objectID) != murs.end())) {
                      // Supprimer le mur du modèle
                      murs.erase(murs.find(object.objectID));
                      if (isInMap(voisin1)) {
                         tiles[voisin1].removeMurNonInspectee(object.objectID);
+                        tiles[voisin1].removeMur(object.objectID);
                      }
                      if (isInMap(voisin2)) {
                         tiles[voisin2].removeMurNonInspectee(object.objectID);
+                        tiles[voisin2].removeMur(object.objectID);
                      }
                   } else {
                      
