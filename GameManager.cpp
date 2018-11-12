@@ -232,6 +232,12 @@ void GameManager::addNewObjects(TurnInfo ti) noexcept {
       if (m.getTile(npc.second.tileID).getVoisinsMursNonInspecte().empty()) {
          m.getTile(npc.second.tileID).setStatut(MapTile::INSPECTEE);
       }
+      // Mettre a visitable les voisins accessibles connu d'une case visitée
+      for (auto voisinID : m.getTile(npc.second.tileID).getVoisinsAccessibles()) {
+         if (m.getTile(voisinID).getStatut() == MapTile::Statut::CONNU) {
+            m.getTile(voisinID).setStatut(MapTile::Statut::VISITABLE);
+         }
+      }
 
    }
    m.viderInteractObjects();
@@ -330,9 +336,17 @@ void GameManager::updateFlux() noexcept {
          }
          ++ind;
       }
+      // On inverse toDemerge pour supprimer nos éléments depuis la fin
       std::reverse(toDemerge.begin(), toDemerge.end());
+      // On supprime du flux courant les ID demergés
       for (auto pos : toDemerge) {
          npcsID.erase(npcsID.begin() + pos);
+      }
+      // Réinitialisé nos flux
+      if (!toDemerge.empty()) {
+         for (auto &npcID : npcsID) {
+            getNpcById(npcID).setEnsembleAccessible({ getNpcById(npcsID[0]).getTileId() });
+         }
       }
    }
 
