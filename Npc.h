@@ -37,7 +37,7 @@ public:
    void addScore(int tileIndice, float score) noexcept;
    Chemin getCheminMinNonPris(vector<int> objectifsPris, int tailleCheminMax) const noexcept; // Permet de trouver le chemin le plus court qui ne soit pas déjà pris
    int affecterMeilleurChemin(Map &m) noexcept; // Affecte au npc le chemin avec le meilleur score et renvoie la destination de ce chemin !
-   vector<int> floodfill(Map &m); // Calcule le coût et l'ensemble des tiles accessibles pour un npcs, et MAJ ses attributs.
+   const vector<int>& floodfill(Map &m); // Calcule le coût et l'ensemble des tiles accessibles pour un npcs, et MAJ ses attributs.
    void inspectWall(int wallID);
    void openDoor(int doorID);
 
@@ -59,7 +59,8 @@ public:
    bool isAccessibleTile(int tileId) const;
    bool isArrived() const;
    void setArrived(bool etat);
-   void setEnsembleAccessible(vector<int> newEnsembleAccessible);
+   void setEnsembleAccessible(const vector<int>& newEnsembleAccessible);
+   void setEnsembleAccessible(vector<int>&& newEnsembleAccessible);
 };
 
 #endif

@@ -53,19 +53,20 @@ public:
    int getX() const noexcept;
    int getY() const noexcept;
    Tile::ETileType getType() const noexcept;
-   vector<int> getVoisins() const noexcept;
-   vector<int> getVoisinsAccessibles() const noexcept;
+   const vector<int>& getVoisins() const noexcept;
+   const vector<int>& getVoisinsAccessibles() const noexcept;
    void addVoisinAccessible(int voisinID) noexcept;
    void addVoisinVisible(int voisinID) noexcept;
-   vector<int> getVoisinsVisibles() const noexcept;
-   vector<int> getVoisinsMysterieux() const noexcept;
+   const vector<int>& getVoisinsVisibles() const noexcept;
+   const vector<int>& getVoisinsMysterieux() const noexcept;
    int getActivateur() const noexcept;
-   vector<int> getVoisinsMursNonInspecte();
+   const vector<int>& getVoisinsMursNonInspecte();
    bool isInVoisins(int id) const noexcept;
    bool isInVoisinsAccessibles(int id) const noexcept;
    bool isInVoisinsVisibles(int id) const noexcept;
    bool isInVoisinsMysterieux(int id) const noexcept;
    Statut getStatut() const noexcept;
+   bool isAccessible() const noexcept;
    void setStatut(Statut new_statut);
 };
 

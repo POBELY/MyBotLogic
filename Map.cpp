@@ -617,6 +617,12 @@ MapTile& Map::getTile(int id) {
     return tiles[id];
 }
 
+const MapTile& Map::getTile(int id) const {
+    if (id < 0 || id >= getNbTiles())
+        throw tile_inexistante{};
+    return tiles[id];
+}
+
 vector<unsigned int> Map::getObjectifs() {
     return objectifs;
 }

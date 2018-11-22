@@ -323,74 +323,87 @@ void GameManager::updateFlux() noexcept {
 
    // Demerger nos Flux : A TESTER
    vector<int> toDemerge;
-   int ind;
-   for (auto &npcsID : flux) {
-      toDemerge = {};
-      ind = 0;
-      for (auto &npcID : npcsID) {
-         if (npcsID[0] != npcID && !m.aStar(getNpcById(npcsID[0]).getTileId(), getNpcById(npcID).getTileId()).isAccessible()) {
-            flux.push_back({ npcID });
-            // ReDef ensembleAccess
-            getNpcById(npcID).setEnsembleAccessible({ getNpcById(npcID).getTileId() });
-            toDemerge.push_back(ind);
-         }
-         ++ind;
-      }
-      // On inverse toDemerge pour supprimer nos éléments depuis la fin
-      std::reverse(toDemerge.begin(), toDemerge.end());
-      // On supprime du flux courant les ID demergés
-      for (auto pos : toDemerge) {
-         npcsID.erase(npcsID.begin() + pos);
-      }
-      // Réinitialisé nos flux
-      if (!toDemerge.empty()) {
-         for (auto &npcID : npcsID) {
-            getNpcById(npcID).setEnsembleAccessible({ getNpcById(npcsID[0]).getTileId() });
-         }
-      }
+   {
+       ScopedProfiler demerge_scope("unmerge");
+       int ind;
+       for (auto &npcsID : flux) {
+          toDemerge = {};
+          ind = 0;
+          for (auto &npcID : npcsID) {
+             if (npcsID[0] != npcID && !m.aStar(getNpcById(npcsID[0]).getTileId(), getNpcById(npcID).getTileId()).isAccessible()) {
+                flux.push_back({ npcID });
+                // ReDef ensembleAccess
+                getNpcById(npcID).setEnsembleAccessible({ getNpcById(npcID).getTileId() });
+                toDemerge.push_back(ind);
+             }
+             ++ind;
+          }
+          // On inverse toDemerge pour supprimer nos éléments depuis la fin
+          std::reverse(toDemerge.begin(), toDemerge.end());
+          // On supprime du flux courant les ID demergés
+          for (auto pos : toDemerge) {
+             npcsID.erase(npcsID.begin() + pos);
+          }
+          // Réinitialisé nos flux
+          if (!toDemerge.empty()) {
+             for (auto &npcID : npcsID) {
+                getNpcById(npcID).setEnsembleAccessible({ getNpcById(npcsID[0]).getTileId() });
+             }
+          }
+       }
    }
 
    // Mettre à jour nos Flux
-   for (auto npcsID : flux) {
-      vector<int> flood = getNpcById(npcsID[0]).floodfill(m);
-      // On copie ce flux pour tous ceux partageant le même flux
-      for (auto npcID : npcsID) {
-         getNpcById(npcID).setEnsembleAccessible(flood);
-      }
+   {
+       ScopedProfiler update_scope("Update");
+       for (const std::vector<unsigned int>& npcsID : flux) {
+
+        const vector<int>& flood = getNpcById(npcsID[0]).floodfill(m);
+        // On copie ce flux pour tous ceux partageant le même flux
+        for (auto npcID : npcsID) {
+            getNpcById(npcID).setEnsembleAccessible(flood);
+        }
+       }
    }
 
    // Trouver les flux communs
    vector<int> toErase = {};
-   for (int i = 0; i < flux.size() - 1; ++i) {
-      if (find(toErase.begin(), toErase.end(), i) == toErase.end()) {
-         for (int j = i + 1; j < flux.size(); ++j) {
-            // non 0 mais indice de tuile visite ou visitable !!! A FAIRE
+   {
+       ScopedProfiler demerge_scope("search commons");
+       for (int i = 0; i < flux.size() - 1; ++i) {
+          if (find(toErase.begin(), toErase.end(), i) == toErase.end()) {
+             for (int j = i + 1; j < flux.size(); ++j) {
+                // non 0 mais indice de tuile visite ou visitable !!! A FAIRE
 
-            vector<int> ensembleAccessible_i = getNpcById(flux[i][0]).getEnsembleAccessible();
-            vector<int> ensembleAccessible_j = getNpcById(flux[j][0]).getEnsembleAccessible();
-            int indice_tuile = 0;
-            // Recherché une tuile visite ou visitable de notre flux
-            for (auto tileID : ensembleAccessible_j) {
-               if (m.getTile(tileID).getStatut() == MapTile::VISITE || m.getTile(tileID).getStatut() == MapTile::VISITABLE) {
-                  indice_tuile = tileID;
-                  break;
-               }
-            }
-            // Si cette tuile appartient à un autre flux, alors ces flux sont identiques
-            if (find(ensembleAccessible_i.begin(), ensembleAccessible_i.end(), indice_tuile) != ensembleAccessible_i.end()) {
-               toErase.push_back(j);
-               // Rejoindre un flux partagé
-               for (auto f : flux[j]) {
-                  flux[i].push_back(f);
-               }
-            }
-         }
-      }
+                vector<int> ensembleAccessible_i = getNpcById(flux[i][0]).getEnsembleAccessible();
+                vector<int> ensembleAccessible_j = getNpcById(flux[j][0]).getEnsembleAccessible();
+                int indice_tuile = 0;
+                // Recherché une tuile visite ou visitable de notre flux
+                for (auto tileID : ensembleAccessible_j) {
+                   if (m.getTile(tileID).getStatut() == MapTile::VISITE || m.getTile(tileID).getStatut() == MapTile::VISITABLE) {
+                      indice_tuile = tileID;
+                      break;
+                   }
+                }
+                // Si cette tuile appartient à un autre flux, alors ces flux sont identiques
+                if (find(ensembleAccessible_i.begin(), ensembleAccessible_i.end(), indice_tuile) != ensembleAccessible_i.end()) {
+                   toErase.push_back(j);
+                   // Rejoindre un flux partagé
+                   for (auto f : flux[j]) {
+                      flux[i].push_back(f);
+                   }
+                }
+             }
+          }
+       }
    }
    // Supprimer les flux n'existant plus
-   std::reverse(toErase.begin(), toErase.end());
-   for (auto i : toErase) {
-      flux.erase(flux.begin() + i);
+   {
+       ScopedProfiler demerge_scope("Erase unused");
+       std::reverse(toErase.begin(), toErase.end());
+       for (auto i : toErase) {
+          flux.erase(flux.begin() + i);
+       }
    }
 }
 

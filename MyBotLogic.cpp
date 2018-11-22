@@ -8,8 +8,8 @@
 #include "MyBotLogic/Profileur.h"
 #include <chrono>
 #include <fstream>
-using namespace std::chrono;
 
+using namespace std::chrono;
 
 MyBotLogic::MyBotLogic() :
     logpath{""}
@@ -44,7 +44,7 @@ MyBotLogic::MyBotLogic() :
 
 /*virtual*/ void MyBotLogic::Init(LevelInfo& _levelInfo)
 {
-    auto pre = high_resolution_clock::now();
+    PROFILE_SCOPE("Init");
     // Le logger
 	GameManager::SetLog(logpath, "MyLog.log");
 	GameManager::SetLogRelease(logpath, "MyLogRelease.log");
@@ -54,8 +54,6 @@ MyBotLogic::MyBotLogic() :
 
     // On associe à chaque npc son objectif !
     //gm.associateNpcsWithObjectiv();
-    auto post = high_resolution_clock::now();
-    GameManager::Log("Durée Initialisation = " + to_string(duration_cast<microseconds>(post - pre).count() / 1000.f) + "ms");
 }
 
 /*virtual*/ void MyBotLogic::OnGameStarted()

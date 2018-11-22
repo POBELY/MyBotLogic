@@ -55,9 +55,11 @@ public:
 
     int getRowCount() const noexcept;
     int getColCount() const noexcept;
+    int getTailleTotal() const noexcept { return getRowCount() * getColCount(); }
     int getNbTiles() const noexcept;
     int getNbTilesDecouvertes() const noexcept;
     MapTile& getTile(int id);
+    const MapTile& getTile(int id) const;
     int getDistance(int tile1,int tile2);
     int getDistanceAStar(int tile1, int tile2);
 

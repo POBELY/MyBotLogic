@@ -169,11 +169,11 @@ Tile::ETileType MapTile::getType() const noexcept {
    return type;
 }
 
-vector<int> MapTile::getVoisins() const noexcept {
+const vector<int>& MapTile::getVoisins() const noexcept {
    return voisins;
 }
 
-vector<int> MapTile::getVoisinsAccessibles() const noexcept {
+const vector<int>& MapTile::getVoisinsAccessibles() const noexcept {
    return voisinsAccessibles;
 }
 
@@ -186,11 +186,11 @@ void MapTile::addVoisinVisible(int voisinID) noexcept {
 }
 
 
-vector<int> MapTile::getVoisinsVisibles() const noexcept {
+const vector<int>& MapTile::getVoisinsVisibles() const noexcept {
    return voisinsVisibles;
 }
 
-vector<int> MapTile::getVoisinsMysterieux() const noexcept {
+const vector<int>& MapTile::getVoisinsMysterieux() const noexcept {
    return voisinsMysterious;
 }
 
@@ -198,7 +198,7 @@ int MapTile::getActivateur() const noexcept {
    return activateur;
 }
 
-vector<int> MapTile::getVoisinsMursNonInspecte() {
+const vector<int>& MapTile::getVoisinsMursNonInspecte() {
    return voisinsMursNonInspectee;
 }
 
@@ -220,6 +220,12 @@ bool MapTile::isInVoisinsMysterieux(int id) const noexcept {
 
 MapTile::Statut MapTile::getStatut() const noexcept {
    return statut;
+}
+
+bool MapTile::isAccessible() const noexcept {
+    return getStatut() == MapTile::INSPECTEE 
+       ||  getStatut() == MapTile::VISITE 
+       ||  getStatut() == MapTile::VISITABLE;
 }
 
 void MapTile::setStatut(MapTile::Statut new_statut) {

@@ -3,6 +3,7 @@
 #include "Globals.h"
 #include "GameManager.h"
 #include <chrono>
+#include <algorithm>
 
 Npc::Npc(const NPCInfo info) :
    id{ static_cast<int>(info.npcID) },
@@ -13,7 +14,6 @@ Npc::Npc(const NPCInfo info) :
    estArrive{ false }
 {
 }
-
 
 void Npc::move(Tile::ETilePosition direction, Map &m) noexcept {
    tileId = m.getAdjacentTileAt(tileId, direction);
@@ -96,7 +96,8 @@ void ajoutIfUnkown(Map &m, int voisin, const vector<int>& oldOpen, const vector<
    // Si elle est connu
    if (m.getTile(voisin).existe()) {
       // Si elle n'est pas déjà ajouté
-      if (find(oldOpen.begin(), oldOpen.end(), voisin) == oldOpen.end() && find(Open.begin(), Open.end(), voisin) == Open.end()) {
+      if (find(oldOpen.begin(), oldOpen.end(), voisin) == oldOpen.end() 
+       && find(Open.begin(), Open.end(), voisin) == Open.end()) {
          // On l'ajoute comme nouvelle tuile ouverte
          newOpen.push_back(voisin);
       }
@@ -104,7 +105,7 @@ void ajoutIfUnkown(Map &m, int voisin, const vector<int>& oldOpen, const vector<
 }
 
 void addNewVoisins(Map &m, int tileID, const vector<int>& oldOpen, vector<int>& Open, vector<int>& newOpen) {
-   for (auto voisin : m.getTile(tileID).getVoisinsAccessibles()) {
+   for (int voisin : m.getTile(tileID).getVoisinsAccessibles()) {
       ajoutIfUnkown(m, voisin, oldOpen, Open, newOpen);
    }
    // On définit les dernières tuiles ajoutés avec leur coût courant
@@ -114,25 +115,28 @@ void addNewVoisins(Map &m, int tileID, const vector<int>& oldOpen, vector<int>& 
 }
 
 void parcourirNewVoisins(Map &m, int tileID, vector<int>& oldOpen, vector<int>& Open, vector<int>& newOpen) {
-   oldOpen = newOpen;
-   newOpen = vector<int>();
+   oldOpen.swap(newOpen);
+   newOpen.clear();
    // On regarde les voisins des dernieres tuiles ajoutées
    for (int tileID : oldOpen) {
       addNewVoisins(m, tileID, oldOpen, Open, newOpen);
    }
 }
 
-vector<int> Npc::floodfill(Map &m) {
+const vector<int>& Npc::floodfill(Map &m) {
    vector<int> Open;
    vector<int> oldOpen;
    vector<int> newOpen;
 
-   // Initialisation newOpen aux cases Visite et Visitable
-   for (auto tileID : ensembleAccessible) {
-      if (m.getTile(tileID).getStatut() == MapTile::INSPECTEE || m.getTile(tileID).getStatut() == MapTile::VISITE || m.getTile(tileID).getStatut() == MapTile::VISITABLE) {
-         newOpen.push_back(tileID);
-      }
-   }
+   Open.reserve(m.getTailleTotal());
+   oldOpen.reserve(m.getTailleTotal());
+   newOpen.reserve(m.getTailleTotal());
+
+   // Initialisation newOpen aux cases accessibles
+   std::copy_if(ensembleAccessible.begin(), 
+                ensembleAccessible.end(), 
+                std::back_inserter(newOpen), 
+                [&m](const int tile_id) { return m.getTile(tile_id).isAccessible(); });
 
    // Tant qu'il reste des noeuds à traiter ...
    while (!newOpen.empty()) {
@@ -140,8 +144,8 @@ vector<int> Npc::floodfill(Map &m) {
    }
 
    // On met à jour l'ensemble et les distances accessible d'un NPC
-   ensembleAccessible = Open;
-   return Open;
+   ensembleAccessible = std::move(Open);
+   return ensembleAccessible;
 }
 
 void Npc::inspectWall(int wallID) {
@@ -225,6 +229,10 @@ void Npc::setArrived(bool etat) {
    estArrive = etat;
 }
 
-void Npc::setEnsembleAccessible(vector<int> newEnsembleAccessible) {
+void Npc::setEnsembleAccessible(const vector<int>& newEnsembleAccessible) {
    ensembleAccessible = newEnsembleAccessible;
+}
+
+void Npc::setEnsembleAccessible(vector<int>&& newEnsembleAccessible) {
+    ensembleAccessible = std::move(newEnsembleAccessible);
 }
