@@ -6,6 +6,8 @@
 #include "Chemin.h"
 #include "Map.h"
 #include <vector>
+#include "BehaviorTree/Composite/Selecteur.h"
+class GameManager;
 using namespace std;
 
 class tile_inaccessible {};
@@ -24,11 +26,18 @@ private:
    bool estArrive; // indique si le npc a atteind son objectif
    int interactWall = -1;
    int interactDoor = -1;
+   Selecteur behaviorTreeNpc;
 
 public:
 
    Npc() = default;
    Npc(const NPCInfo);
+   void initializeBehaviorTree(GameManager& gm) noexcept; // Permet d'initialiser le BT
+
+   void execute() noexcept {
+      //ScopedProfiler p("NPC Execute");
+      behaviorTreeNpc.execute();
+   };
 
    void move(Tile::ETilePosition, Map&) noexcept; // Permet de faire bouger notre npc dans notre modèle =)
 

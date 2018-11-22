@@ -4,6 +4,9 @@
 #include "GameManager.h"
 #include <chrono>
 #include <algorithm>
+#include "Strategies/Inspection.h"
+#include "Strategies/Exploration.h"
+#include "BehaviorTree/Composite/Sequenceur.h"
 
 Npc::Npc(const NPCInfo info) :
    id{ static_cast<int>(info.npcID) },
@@ -13,6 +16,14 @@ Npc::Npc(const NPCInfo info) :
    ensembleAccessible{ static_cast<int>(info.tileID) },
    estArrive{ false }
 {
+}
+
+void Npc::initializeBehaviorTree(GameManager& gm) noexcept {
+   //  Création du behaviorTree Manager 
+   
+   ScoreStrategie *exploration = new Exploration(gm);
+   Inspection *inspection = new Inspection(gm);
+   behaviorTreeNpc = Selecteur({exploration, inspection });
 }
 
 void Npc::move(Tile::ETilePosition direction, Map &m) noexcept {

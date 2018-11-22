@@ -54,7 +54,13 @@ void GameManager::InitializeBehaviorTree() noexcept {
    Sequenceur *sequenceur2 = new Sequenceur({ objectifs, selecteur });
 
    behaviorTreeManager = Selecteur({ sequenceur2, exploration, inspection });
-}
+
+   //Initialisation des BehaviorTree des Npcs
+   for (Npc& npc : npcs) {
+      npc.initializeBehaviorTree(*this);
+   }
+
+   }
 
 vector<Mouvement> GameManager::getAllMouvements() {
    // On va récupérer la liste des mouvements
