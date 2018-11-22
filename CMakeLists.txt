@@ -3,6 +3,8 @@ project( AIBot C CXX )
 
 #add_definitions(-DDEBUG_FRAMEWORK)
 
+option(ENABLE_PROFILING OFF)
+
 include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}
 )
@@ -59,8 +61,8 @@ SET( AIBOT_HEADERS
 	MyBotLogic/Strategies/Expedition.h
 	MyBotLogic/Strategies/Exploitation.h
 	MyBotLogic/Strategies/Exploration.h
-	MyBotLogic/Strategies/Inspection.h
 	MyBotLogic/Strategies/ScoreStrategie.h
+	MyBotLogic/Strategies/Inspection.h
 	MyBotLogic/Profileur.h
 )
 
@@ -85,8 +87,8 @@ SET( AIBOT_SRC
 	MyBotLogic/Strategies/Expedition.cpp
 	MyBotLogic/Strategies/Exploitation.cpp
 	MyBotLogic/Strategies/Exploration.cpp
-	MyBotLogic/Strategies/Inspection.cpp
 	MyBotLogic/Strategies/ScoreStrategie.cpp
+	MyBotLogic/Strategies/Inspection.cpp
 	MyBotLogic/Profileur.cpp
 	
 	#Main
@@ -103,6 +105,10 @@ add_executable(
 	${AIBOT_HEADERS}
 	${AIBOT_SRC}
 )
+
+if(ENABLE_PROFILING)
+	target_compile_definitions(aibot PUBLIC ENABLE_PROFILING)
+endif()
 
 CREATE_VISUAL_STUDIO_FILTERS(AIBOT)
 

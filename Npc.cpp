@@ -105,6 +105,7 @@ void ajoutIfUnkown(Map &m, int voisin, const vector<int>& oldOpen, const vector<
 }
 
 void addNewVoisins(Map &m, int tileID, const vector<int>& oldOpen, vector<int>& Open, vector<int>& newOpen) {
+   PROFILE_SCOPE("addNewVoisins");
    for (int voisin : m.getTile(tileID).getVoisinsAccessibles()) {
       ajoutIfUnkown(m, voisin, oldOpen, Open, newOpen);
    }
@@ -115,6 +116,7 @@ void addNewVoisins(Map &m, int tileID, const vector<int>& oldOpen, vector<int>& 
 }
 
 void parcourirNewVoisins(Map &m, int tileID, vector<int>& oldOpen, vector<int>& Open, vector<int>& newOpen) {
+   PROFILE_SCOPE("parcourirNewVoisins");
    oldOpen.swap(newOpen);
    newOpen.clear();
    // On regarde les voisins des dernieres tuiles ajoutées
@@ -124,6 +126,7 @@ void parcourirNewVoisins(Map &m, int tileID, vector<int>& oldOpen, vector<int>& 
 }
 
 const vector<int>& Npc::floodfill(Map &m) {
+    PROFILE_SCOPE("floodfill");
    vector<int> Open;
    vector<int> oldOpen;
    vector<int> newOpen;
