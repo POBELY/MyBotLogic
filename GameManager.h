@@ -7,6 +7,7 @@
 #include "Mouvement.h"
 #include "TurnInfo.h"
 #include "Profileur.h"
+#include "Flood.h"
 
 #include "BehaviorTree/Composite/Selecteur.h"
 
@@ -22,7 +23,9 @@ public:
    Map m;
    Selecteur behaviorTreeManager; // Arbre de comportement du GameManager pour déterminer la stratégie à suivre
    vector<int> objectifPris; // Permet de savoir quels sont les objectifs actuellement assignés à des npcs
-   vector<vector<unsigned int>> flux;
+   //vector<vector<unsigned int>> flux;
+   vector<std::unique_ptr<Flood>> floods;
+   vector<vector<unsigned int>> shared_floods_mapping;
 
    GameManager() = default;
    GameManager(LevelInfo);
@@ -30,6 +33,9 @@ public:
    void reafecterObjectifsSelonDistance(); // Réaffecte les objectifs des Npcs entre
    void ordonnerMouvements(vector<Mouvement>& mouvements) noexcept; // Permet d'ordonner les mouvements pour éviter les collisions et gérer les politesses de priorités =)
    void updateModel(const TurnInfo&) noexcept; // Met à jour le modèle avec les informations que découvrent les NPCS
+   void unmerge_floods();
+   void merge_floods();
+   void grow_floods();
    void updateFlux() noexcept;
    void InitializeBehaviorTree() noexcept; // Permet d'initialiser le BT
    void execute() noexcept {

@@ -4,13 +4,14 @@
 #include "GameManager.h"
 #include <chrono>
 #include <algorithm>
+#include <cassert>
 
 Npc::Npc(const NPCInfo info) :
    id{ static_cast<int>(info.npcID) },
    tileId{ static_cast<int>(info.tileID) },
    tileObjectif{ -1 },
    chemin{ Chemin{} },
-   ensembleAccessible{ static_cast<int>(info.tileID) },
+   associated_flood{nullptr},
    estArrive{ false }
 {
 }
@@ -125,30 +126,35 @@ void parcourirNewVoisins(Map &m, int tileID, vector<int>& oldOpen, vector<int>& 
    }
 }
 
-const vector<int>& Npc::floodfill(Map &m) {
+void Npc::floodfill(Map &m) {
     PROFILE_SCOPE("floodfill");
-   vector<int> Open;
-   vector<int> oldOpen;
-   vector<int> newOpen;
+#if 1
+    associated_flood->reduce_to_accessibles(m);
+    associated_flood->grow(m);
+#else
+    vector<int> Open;
+    vector<int> oldOpen;
+    vector<int> newOpen;
 
-   Open.reserve(m.getTailleTotal());
-   oldOpen.reserve(m.getTailleTotal());
-   newOpen.reserve(m.getTailleTotal());
+    Open.reserve(m.getTailleTotal());
+    oldOpen.reserve(m.getTailleTotal());
+    newOpen.reserve(m.getTailleTotal());
 
-   // Initialisation newOpen aux cases accessibles
-   std::copy_if(ensembleAccessible.begin(), 
-                ensembleAccessible.end(), 
-                std::back_inserter(newOpen), 
-                [&m](const int tile_id) { return m.getTile(tile_id).isAccessible(); });
+    // Initialisation newOpen aux cases accessibles
+    std::copy_if(ensembleAccessible.begin(),
+        ensembleAccessible.end(),
+        std::back_inserter(newOpen),
+        [&m](const int tile_id) { return m.getTile(tile_id).isAccessible(); });
 
-   // Tant qu'il reste des noeuds à traiter ...
-   while (!newOpen.empty()) {
-      parcourirNewVoisins(m, tileId, oldOpen, Open, newOpen);
-   }
+    // Tant qu'il reste des noeuds à traiter ...
+    while (!newOpen.empty()) {
+        parcourirNewVoisins(m, tileId, oldOpen, Open, newOpen);
+    }
 
-   // On met à jour l'ensemble et les distances accessible d'un NPC
-   ensembleAccessible = std::move(Open);
-   return ensembleAccessible;
+    // On met à jour l'ensemble et les distances accessible d'un NPC
+    ensembleAccessible = std::move(Open);
+    return ensembleAccessible;
+#endif
 }
 
 void Npc::inspectWall(int wallID) {
@@ -215,13 +221,17 @@ void Npc::setChemin(Chemin&& chemin) {
    this->chemin = std::move(chemin);
 }
 
-const vector<int>& Npc::getEnsembleAccessible() const noexcept {
-   return ensembleAccessible;
+const Flood* Npc::getEnsembleAccessible() const noexcept {
+    return associated_flood;
+}
+
+Flood* Npc::getEnsembleAccessible() noexcept {
+    return associated_flood;
 }
 
 bool Npc::isAccessibleTile(int tileId) const {
-   PROFILE_SCOPE("Npc::isAccessibleTile");
-   return find(ensembleAccessible.begin(), ensembleAccessible.end(), tileId) != ensembleAccessible.end();
+    assert(associated_flood);
+   return associated_flood->is_flooded(tileId);
 }
 
 bool Npc::isArrived() const {
@@ -232,10 +242,6 @@ void Npc::setArrived(bool etat) {
    estArrive = etat;
 }
 
-void Npc::setEnsembleAccessible(const vector<int>& newEnsembleAccessible) {
-   ensembleAccessible = newEnsembleAccessible;
-}
-
-void Npc::setEnsembleAccessible(vector<int>&& newEnsembleAccessible) {
-    ensembleAccessible = std::move(newEnsembleAccessible);
+void Npc::setEnsembleAccessible(Flood* associated_flood) {
+   this->associated_flood = associated_flood;
 }
