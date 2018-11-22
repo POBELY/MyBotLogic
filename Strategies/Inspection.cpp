@@ -14,7 +14,7 @@ BT_Noeud::ETAT_ELEMENT Inspection::execute() noexcept {
       bool openDoor = false;
       // On regarde si l'on peut ouvrir une porte
       if (!isolatedClosedDoors.empty()) {
-         vector<int> ensembleAccessible = npc.getEnsembleAccessible();
+         const Flood* ensembleAccessible = npc.getEnsembleAccessible();
          // Prendre une porte isolée si elle est accessible
          for (auto doorID : isolatedClosedDoors) {
             ObjectInfo object = gm.m.getPortes()[doorID];
@@ -31,13 +31,13 @@ BT_Noeud::ETAT_ELEMENT Inspection::execute() noexcept {
                break;
             } // Sinon on regarde si ces tuiles sont accessibles et on y va
             else {
-               if (find(ensembleAccessible.begin(), ensembleAccessible.end(), goal1ID) != ensembleAccessible.end()) {
+               if (ensembleAccessible->is_flooded(goal1ID)) {
                   npc.setChemin(gm.m.aStar(npc.getTileId(), goal1ID));
                   openDoor = true;
                   isolatedClosedDoors.erase(find(isolatedClosedDoors.begin(), isolatedClosedDoors.end(), doorID));
                   break;
                }
-               else if (find(ensembleAccessible.begin(), ensembleAccessible.end(), goal2ID) != ensembleAccessible.end()) {
+               else if (ensembleAccessible->is_flooded(goal2ID)) {
                   npc.setChemin(gm.m.aStar(npc.getTileId(), goal2ID));
                   openDoor = true;
                   isolatedClosedDoors.erase(find(isolatedClosedDoors.begin(), isolatedClosedDoors.end(), doorID));

@@ -24,18 +24,21 @@ Logger GameManager::logger{};
 Logger GameManager::loggerRelease{};
 
 GameManager::GameManager(LevelInfo info) :
-   m{ Map(info) },
-   objectifPris{ vector<int>{} }
+    m{ Map(info) },
+    objectifPris{ vector<int>{} }
 {
-   // On récupère l'ensemble des npcs !
-   for (auto pair_npc : info.npcs) {
-      NPCInfo npc = pair_npc.second;
-      npcs.emplace_back(npc);
-      flux.push_back({ npc.npcID }); // Initialisation flux
-   }
+    floods.reserve(info.npcs.size());
+    shared_floods_mapping.reserve(info.npcs.size());
+    // On récupère l'ensemble des npcs !
+    for (auto pair_npc : info.npcs) {
+        NPCInfo npc = pair_npc.second;
+        npcs.emplace_back(npc);
+        floods.push_back(std::make_unique<Flood>(m, npc.tileID));
+        shared_floods_mapping.push_back({npc.npcID});
+        npcs.back().setEnsembleAccessible(floods.back().get());
+    }
 
-   updateFlux();
-
+    updateFlux();
 }
 
 void GameManager::InitializeBehaviorTree() noexcept {
@@ -318,93 +321,101 @@ void GameManager::reafecterObjectifsSelonDistance() {
    }
 }
 
-void GameManager::updateFlux() noexcept {
-   PROFILE_SCOPE("updateFlux");
+void GameManager::unmerge_floods() {
+    PROFILE_SCOPE("unmerge floods");
+    vector<int> toDemerge;
+    int ind;
+    for (std::vector<unsigned int>& npc_sharing_flood : shared_floods_mapping) {
+        toDemerge.clear();
+        ind = 0;
 
-   // Demerger nos Flux : A TESTER
-   vector<int> toDemerge;
-   {
-       ScopedProfiler demerge_scope("unmerge");
-       int ind;
-       for (auto &npcsID : flux) {
-          toDemerge = {};
-          ind = 0;
-          for (auto &npcID : npcsID) {
-             if (npcsID[0] != npcID && !m.aStar(getNpcById(npcsID[0]).getTileId(), getNpcById(npcID).getTileId()).isAccessible()) {
-                flux.push_back({ npcID });
-                // ReDef ensembleAccess
-                getNpcById(npcID).setEnsembleAccessible({ getNpcById(npcID).getTileId() });
+        Npc& owning_npc = getNpcById(npc_sharing_flood.front());
+
+        for (unsigned int npcID : npc_sharing_flood) {
+            Npc& sharing_npc = getNpcById(npcID);
+
+            const bool is_npc_sharing_flood = npcID != npc_sharing_flood.front();
+            const bool does_path_exists_between_owning_npc_and_shared = m.aStar(owning_npc.getTileId(),
+                                                                                sharing_npc.getTileId()).isAccessible();
+            const bool should_unmerge = is_npc_sharing_flood 
+                    && !does_path_exists_between_owning_npc_and_shared;
+            if (should_unmerge) {
+                // Crée un nouveau flood pour cet individu
+                shared_floods_mapping.push_back({ npcID });
+                floods.push_back(std::make_unique<Flood>(m, sharing_npc.getTileId()));
+                sharing_npc.setEnsembleAccessible(floods.back().get());
                 toDemerge.push_back(ind);
-             }
-             ++ind;
-          }
-          // On inverse toDemerge pour supprimer nos éléments depuis la fin
-          std::reverse(toDemerge.begin(), toDemerge.end());
-          // On supprime du flux courant les ID demergés
-          for (auto pos : toDemerge) {
-             npcsID.erase(npcsID.begin() + pos);
-          }
-          // Réinitialisé nos flux
-          if (!toDemerge.empty()) {
-             for (auto &npcID : npcsID) {
-                getNpcById(npcID).setEnsembleAccessible({ getNpcById(npcsID[0]).getTileId() });
-             }
-          }
-       }
-   }
-
-   // Mettre à jour nos Flux
-   {
-       ScopedProfiler update_scope("Update");
-       for (const std::vector<unsigned int>& npcsID : flux) {
-
-        const vector<int>& flood = getNpcById(npcsID[0]).floodfill(m);
-        // On copie ce flux pour tous ceux partageant le même flux
-        for (auto npcID : npcsID) {
-            getNpcById(npcID).setEnsembleAccessible(flood);
+            }
+            ++ind;
         }
-       }
-   }
+        // On inverse toDemerge pour supprimer nos éléments depuis la fin
+        std::reverse(toDemerge.begin(), toDemerge.end());
 
-   // Trouver les flux communs
-   vector<int> toErase = {};
-   {
-       ScopedProfiler demerge_scope("search commons");
-       for (int i = 0; i < flux.size() - 1; ++i) {
-          if (find(toErase.begin(), toErase.end(), i) == toErase.end()) {
-             for (int j = i + 1; j < flux.size(); ++j) {
+        // On supprime du flux courant les ID demergés
+        for (auto pos : toDemerge) {
+            npc_sharing_flood.erase(npc_sharing_flood.begin() + pos);
+        }
+    }
+}
+
+void GameManager::merge_floods() {
+    PROFILE_SCOPE("merge floods");
+    vector<int> toErase = {};
+
+    for (int i = 0; i < shared_floods_mapping.size() - 1; ++i) {
+        const auto to_erase_iterator = find(toErase.begin(), toErase.end(), i);
+
+        // Si i n'est pas à effacer
+        if (to_erase_iterator == toErase.end()) {
+            for (int j = i + 1; j < shared_floods_mapping.size(); ++j) {
                 // non 0 mais indice de tuile visite ou visitable !!! A FAIRE
+                Npc& owner_flood_i = getNpcById(shared_floods_mapping[i].front());
+                Npc& owner_flood_j = getNpcById(shared_floods_mapping[j].front());
 
-                vector<int> ensembleAccessible_i = getNpcById(flux[i][0]).getEnsembleAccessible();
-                vector<int> ensembleAccessible_j = getNpcById(flux[j][0]).getEnsembleAccessible();
-                int indice_tuile = 0;
-                // Recherché une tuile visite ou visitable de notre flux
-                for (auto tileID : ensembleAccessible_j) {
-                   if (m.getTile(tileID).getStatut() == MapTile::VISITE || m.getTile(tileID).getStatut() == MapTile::VISITABLE) {
-                      indice_tuile = tileID;
-                      break;
-                   }
+                // Si les 2 floods se touchent
+                if(owner_flood_i.getEnsembleAccessible()->intersects(*owner_flood_j.getEnsembleAccessible())) {
+                    toErase.push_back(j);
+
+                    // Tous les NPC dans j utilisent le flood i dorénavant
+                    for (unsigned int npc_id : shared_floods_mapping[j]) {
+                        Npc& sharing_npc = getNpcById(npc_id);
+                        sharing_npc.setEnsembleAccessible(owner_flood_i.getEnsembleAccessible());
+                    }
                 }
-                // Si cette tuile appartient à un autre flux, alors ces flux sont identiques
-                if (find(ensembleAccessible_i.begin(), ensembleAccessible_i.end(), indice_tuile) != ensembleAccessible_i.end()) {
-                   toErase.push_back(j);
-                   // Rejoindre un flux partagé
-                   for (auto f : flux[j]) {
-                      flux[i].push_back(f);
-                   }
-                }
-             }
-          }
-       }
-   }
-   // Supprimer les flux n'existant plus
-   {
-       ScopedProfiler demerge_scope("Erase unused");
-       std::reverse(toErase.begin(), toErase.end());
-       for (auto i : toErase) {
-          flux.erase(flux.begin() + i);
-       }
-   }
+            }
+        }
+    }
+
+    // Supprimer les flux n'existant plus
+    std::reverse(toErase.begin(), toErase.end());
+    for (auto i : toErase) {
+         shared_floods_mapping.erase(shared_floods_mapping.begin() + i);
+         floods.erase(floods.begin() + i);
+    }
+}
+
+void GameManager::grow_floods() {
+    PROFILE_SCOPE("grow floods");
+
+    for (const std::vector<unsigned int>& shared_flood_group : shared_floods_mapping) {
+        Npc& flood_owner = getNpcById(shared_flood_group.front());
+
+        flood_owner.floodfill(m);
+
+        // Tous les NPC d'un même groupe partage le flood du propriétaire
+        for (auto sharing_npc_id : shared_flood_group) {
+            Npc& sharing_npc = getNpcById(sharing_npc_id);
+            sharing_npc.setEnsembleAccessible(flood_owner.getEnsembleAccessible());
+        }
+    }
+}
+
+void GameManager::updateFlux() noexcept {
+    PROFILE_SCOPE("updateFlux");
+
+    unmerge_floods();
+    grow_floods();
+    merge_floods();
 }
 
 bool GameManager::isDoorAdjacente(int interrupteurID) {
