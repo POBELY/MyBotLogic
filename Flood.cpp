@@ -36,11 +36,12 @@ void Flood::try_to_add_neighbors_of(const Map& map, std::size_t tile_id, std::ve
 bool Flood::grow_from_neighbors(const Map& map) {
     std::vector<std::size_t> to_adds;
     for (std::size_t i = 0; i < tiles_.size(); ++i) {
-        if(!tiles_[i]) {
-            to_adds.push_back(i);
+        //if(!tiles_[i]) {
+        //    to_adds.push_back(i);
+        //}
+        if(tiles_[i]) {
+            try_to_add_neighbors_of(map, i, to_adds);
         }
-
-        try_to_add_neighbors_of(map, i, to_adds);
     }
 
     for(std::size_t to_add : to_adds) {
@@ -83,4 +84,11 @@ std::vector<int> Flood::tiles() const noexcept {
     }
 
     return all_tiles;
+}
+
+void Flood::reset(std::size_t tile_id) {
+    for (std::size_t i = 0; i < tiles_.size(); ++i) {
+        tiles_[i] = false;
+    }
+    tiles_[tile_id] = true;
 }

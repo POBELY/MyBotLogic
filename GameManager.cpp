@@ -323,27 +323,32 @@ void GameManager::reafecterObjectifsSelonDistance() {
 
 void GameManager::unmerge_floods() {
     PROFILE_SCOPE("unmerge floods");
-    vector<int> toDemerge;
-    int ind;
+    
     for (std::vector<unsigned int>& npc_sharing_flood : shared_floods_mapping) {
-        toDemerge.clear();
-        ind = 0;
+        vector<int> toDemerge;
+        int ind = 0;
 
         Npc& owning_npc = getNpcById(npc_sharing_flood.front());
 
-        for (unsigned int npcID : npc_sharing_flood) {
-            Npc& sharing_npc = getNpcById(npcID);
+        // Pour tous les NPC qui partagent ce même flood
+        for (unsigned int sharing_npc_id : npc_sharing_flood) {
+            Npc& sharing_npc = getNpcById(sharing_npc_id);
 
-            const bool is_npc_sharing_flood = npcID != npc_sharing_flood.front();
+            const bool is_npc_owning_flood = sharing_npc.getId() == owning_npc.getId();
+            const bool is_npc_sharing_flood = !is_npc_owning_flood;
             const bool does_path_exists_between_owning_npc_and_shared = m.aStar(owning_npc.getTileId(),
                                                                                 sharing_npc.getTileId()).isAccessible();
-            const bool should_unmerge = is_npc_sharing_flood 
-                    && !does_path_exists_between_owning_npc_and_shared;
+            const bool no_path_to_owner = !does_path_exists_between_owning_npc_and_shared;
+            const bool should_unmerge = is_npc_sharing_flood && no_path_to_owner;
+            
+            // Ce NPC ne fait plus parti du flood qu'il partageait
             if (should_unmerge) {
                 // Crée un nouveau flood pour cet individu
-                shared_floods_mapping.push_back({ npcID });
+                shared_floods_mapping.push_back({ sharing_npc_id });
                 floods.push_back(std::make_unique<Flood>(m, sharing_npc.getTileId()));
                 sharing_npc.setEnsembleAccessible(floods.back().get());
+
+                // Marque l'individu pour qu'il soit retiré plus tard
                 toDemerge.push_back(ind);
             }
             ++ind;
@@ -351,9 +356,16 @@ void GameManager::unmerge_floods() {
         // On inverse toDemerge pour supprimer nos éléments depuis la fin
         std::reverse(toDemerge.begin(), toDemerge.end());
 
-        // On supprime du flux courant les ID demergés
+        // On retire les npc qui ne partagent plus ce flood
         for (auto pos : toDemerge) {
             npc_sharing_flood.erase(npc_sharing_flood.begin() + pos);
+        }
+
+        // Réinitialse le flood original
+        if (!toDemerge.empty()) {
+            for (unsigned int ncp_id : npc_sharing_flood) {
+                owning_npc.getEnsembleAccessible()->reset(owning_npc.getTileId());
+            }
         }
     }
 }
@@ -380,6 +392,7 @@ void GameManager::merge_floods() {
                     for (unsigned int npc_id : shared_floods_mapping[j]) {
                         Npc& sharing_npc = getNpcById(npc_id);
                         sharing_npc.setEnsembleAccessible(owner_flood_i.getEnsembleAccessible());
+                        shared_floods_mapping[i].push_back(npc_id);
                     }
                 }
             }
@@ -401,12 +414,6 @@ void GameManager::grow_floods() {
         Npc& flood_owner = getNpcById(shared_flood_group.front());
 
         flood_owner.floodfill(m);
-
-        // Tous les NPC d'un même groupe partage le flood du propriétaire
-        for (auto sharing_npc_id : shared_flood_group) {
-            Npc& sharing_npc = getNpcById(sharing_npc_id);
-            sharing_npc.setEnsembleAccessible(flood_owner.getEnsembleAccessible());
-        }
     }
 }
 

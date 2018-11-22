@@ -19,6 +19,7 @@ public:
     bool is_flooded(int tile) const noexcept;
     bool intersects(const Flood& other) const noexcept;
     std::vector<int> tiles() const noexcept;
+    void reset(std::size_t tile_id);
 };
 
 #endif

@@ -11,8 +11,6 @@ ScoreStrategie::ScoreStrategie(GameManager& gm, string nom)
 }
 
 BT_Noeud::ETAT_ELEMENT ScoreStrategie::execute() noexcept {
-   auto pre = std::chrono::high_resolution_clock::now();
-
    GameManager::Log(nom);
    // On ne sait pas où se trouvent les objectifs !
    // On va les chercher !
@@ -29,18 +27,10 @@ BT_Noeud::ETAT_ELEMENT ScoreStrategie::execute() noexcept {
       // Calculer le score de chaque tile pour le npc
       // En même temps on calcul le chemin pour aller à cette tile
       // On stocke ces deux informations dans l'attribut cheminsPossibles du Npc
-      auto preCalcul = std::chrono::high_resolution_clock::now();
       calculerScoresTilesPourNpc(npc, tilesAVisiter);
-      auto postCalcul = std::chrono::high_resolution_clock::now();
-      GameManager::Log("Durée calculerScoresEtCheminsTilesPourNpc = " + to_string(std::chrono::duration_cast<std::chrono::microseconds>(postCalcul - preCalcul).count() / 1000.f) + "ms");
-
 
       // Choisir la meilleure tile pour ce npc et lui affecter son chemin
-      auto preAffect = std::chrono::high_resolution_clock::now();
       int tileChoisi = npc.affecterMeilleurChemin(gm.m);
-      auto postAffect = std::chrono::high_resolution_clock::now();
-      GameManager::Log("Durée AffectationChemin = " + to_string(std::chrono::duration_cast<std::chrono::microseconds>(postAffect - preAffect).count() / 1000.f) + "ms");
-
 
       // Mettre à jour les tilesAVisiter
       tilesAVisiter.push_back(tileChoisi);
@@ -48,12 +38,6 @@ BT_Noeud::ETAT_ELEMENT ScoreStrategie::execute() noexcept {
          movesNoStatics = true;
       }
    }
-
-
-
-   // Temps d'execution
-   auto post = std::chrono::high_resolution_clock::now();
-   GameManager::Log("Durée " + nom + " = " + to_string(std::chrono::duration_cast<std::chrono::microseconds>(post - pre).count() / 1000.f) + "ms");
 
    if (movesNoStatics) {
       return ETAT_ELEMENT::REUSSI;
