@@ -145,11 +145,11 @@ int MapTile::inspecter() {
 }
 
 
-bool MapTile::existe() {
+bool MapTile::existe() const noexcept {
    return statut != MapTile::Statut::INCONNU;
 }
 
-bool MapTile::inspectable() {
+bool MapTile::inspectable() const noexcept {
    return statut != MapTile::Statut::INSPECTEE;
 }
 

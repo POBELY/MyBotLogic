@@ -46,8 +46,8 @@ public:
    bool isVoisinMysterious(int id) const noexcept;
    bool hadActivateur() const noexcept;
 
-   bool existe();
-   bool inspectable();
+   bool existe() const noexcept;
+   bool inspectable() const noexcept;
 
    int getId() const noexcept;
    int getX() const noexcept;
