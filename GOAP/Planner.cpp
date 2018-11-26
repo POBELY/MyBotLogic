@@ -7,6 +7,7 @@
 namespace goap {
 
 std::vector<Planner::ActionNode> Planner::extract_actions_from_state(const PlanningState& state) const {
+    PROFILE_SCOPE("Planner::extract_actions_from_state");
     std::vector<ActionNode> actions;
 
     // GoToGoal actions
@@ -38,7 +39,7 @@ std::vector<Planner::ActionNode> Planner::extract_actions_from_state(const Plann
 }
 
 Planner::Plan Planner::plan(const GameManager& current_game_state) {
-    PROFILE_SCOPE("GOAP Planner");
+    PROFILE_SCOPE("Planner::plan");
     PlanningState initial_state(current_game_state);
 
     auto actions_set = extract_actions_from_state(initial_state);
@@ -116,7 +117,14 @@ Planner::Plan Planner::plan(const GameManager& current_game_state) {
     auto best_plan_it = std::min_element(plan_score.begin(), plan_score.end());
     const std::size_t best_plan_index = std::distance(plan_score.begin(), best_plan_it);
 
-    const std::vector<ActionNode*> best_plan = valid_plans[best_plan_index];
+    std::vector<ActionNode*> best_plan = valid_plans[best_plan_index];
+    Plan best_plan_to_return;
+    best_plan_to_return.reserve(best_plan.size());
+    std::transform(best_plan.begin(), best_plan.end(), std::back_inserter(best_plan_to_return), [](ActionNode* action) {
+        return std::move(action->action);
+    });
+
+    return best_plan_to_return;
 }
 
 }

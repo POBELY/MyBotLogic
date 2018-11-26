@@ -25,7 +25,7 @@ class Planner {
 
     std::vector<ActionNode> extract_actions_from_state(const PlanningState& state) const;
 public:
-    using Plan = void;
+    using Plan = std::vector<action_ptr>;
     Plan plan(const GameManager& current_game_state);
 };
 

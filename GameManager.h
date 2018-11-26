@@ -21,6 +21,7 @@ class GameManager {
     static Logger logger, loggerRelease;
     std::vector<Npc> npcs;
     goap::Planner goap_planner;
+    goap::Planner::Plan plan_to_follow;
     int nb_tours_restants;
 public:
    Map m;
@@ -50,6 +51,8 @@ public:
     const std::vector<Npc>& getNpcs() const noexcept;
     void addNpc(Npc npc);
     bool isDoorAdjacente(int interrupteurID);
+
+    bool has_plan() const noexcept { return !plan_to_follow.empty(); }
 
    static void Log(string str) noexcept { // Permet de débugger ! :D
 #ifdef _DEBUG
