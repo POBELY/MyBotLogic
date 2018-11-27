@@ -7,6 +7,9 @@ BT_Noeud::ETAT_ELEMENT Execution::execute() noexcept {
 
    GameManager::Log("Execution");
 
+   // Initialiser les attributs au début du tour d'exéction
+   gm.tilesAVisiter = {};
+   gm.isolatedClosedDoorsToOpen = gm.m.getIsolatedClosedDoors();
    // Executer tous les arbres des NPCS
    for (Npc& npc : gm.getNpcs()) {
       npc.execute();

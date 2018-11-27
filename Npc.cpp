@@ -3,6 +3,7 @@
 #include "Globals.h"
 #include "GameManager.h"
 #include "Strategies/Inspection.h"
+#include "Strategies/OpenDoor.h"
 #include "Strategies/Exploration.h"
 #include "BehaviorTree/Composite/Sequenceur.h"
 #include <chrono>
@@ -21,10 +22,10 @@ Npc::Npc(const NPCInfo info) :
 
 void Npc::initializeBehaviorTree(GameManager& gm) noexcept {
    //  Création du behaviorTree Manager 
-   
-   ScoreStrategie *exploration = new Exploration(gm);
-   Inspection *inspection = new Inspection(gm);
-   behaviorTreeNpc = Selecteur({exploration, inspection });
+   ScoreStrategie *exploration = new Exploration(gm, *this);
+   ScoreStrategie *inspection = new Inspection(gm, *this);
+   OpenDoor *openDoor = new OpenDoor(gm, *this);
+   behaviorTreeNpc = Selecteur({ openDoor, exploration, inspection });
 }
 
 void Npc::move(Tile::ETilePosition direction, Map &m) noexcept {

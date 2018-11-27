@@ -7,42 +7,29 @@ BT_Noeud::ETAT_ELEMENT Inspection::execute() noexcept {
 
    GameManager::Log("Inspection");
 
-   vector<int> tilesAVisiter = {};
-
-   for (auto& npc : gm.getNpcs()) {
-       // On inspecte les murs
-       if (gm.m.getTile(npc.getTileId()).inspectable()) {
-           // Inspecter l'objet et l'ajouter aux objets
-           int wall2InteractID = gm.m.getTile(npc.getTileId()).inspecter();
-           npc.inspectWall(wall2InteractID);
-           gm.m.addInteractObject(wall2InteractID);
-           GameManager::Log("npc " + to_string(npc.getId()) + " interact with object " + to_string(wall2InteractID));
-       }
-       // Sinon on se déplace vers une case inspectable
-       else {
-           npc.resetChemins();
-
-           // Calculer le score de chaque tile pour le npc
-           // En même temps on calcul le chemin pour aller à cette tile
-           // On stocke ces deux informations dans l'attribut cheminsPossibles du Npc
-           auto preCalcul = std::chrono::high_resolution_clock::now();
-           calculerScoresTilesPourNpc(npc, tilesAVisiter);
-           auto postCalcul = std::chrono::high_resolution_clock::now();
-           GameManager::Log("Durée calculerScoresEtCheminsTilesPourNpc = " + to_string(std::chrono::duration_cast<std::chrono::microseconds>(postCalcul - preCalcul).count() / 1000.f) + "ms");
-
-
-           // Choisir la meilleure tile pour ce npc et lui affecter son chemin
-           auto preAffect = std::chrono::high_resolution_clock::now();
-           int tileChoisi = npc.affecterMeilleurChemin(gm.m);
-           auto postAffect = std::chrono::high_resolution_clock::now();
-           GameManager::Log("Durée AffectationChemin = " + to_string(std::chrono::duration_cast<std::chrono::microseconds>(postAffect - preAffect).count() / 1000.f) + "ms");
-
-
-           // Mettre à jour les tilesAVisiter
-           tilesAVisiter.push_back(tileChoisi);
-       }
+   // On inspecte les murs
+   if (gm.m.getTile(npc.getTileId()).inspectable()) {
+      // Inspecter l'objet et l'ajouter aux objets
+      int wall2InteractID = gm.m.getTile(npc.getTileId()).inspecter();
+      npc.inspectWall(wall2InteractID);
+      gm.m.addInteractObject(wall2InteractID);
+      GameManager::Log("npc " + to_string(npc.getId()) + " interact with object " + to_string(wall2InteractID));
    }
+   // Sinon on se déplace vers une case inspectable
+   else {
+      npc.resetChemins();
 
+      // Calculer le score de chaque tile pour le npc
+      // En même temps on calcul le chemin pour aller à cette tile
+      // On stocke ces deux informations dans l'attribut cheminsPossibles du Npc
+      calculerScoresTiles();
+
+      // Choisir la meilleure tile pour ce npc et lui affecter son chemin
+      int tileChoisi = npc.affecterMeilleurChemin(gm.m);
+
+      // Mettre à jour les tilesAVisiter
+      gm.tilesAVisiter.push_back(tileChoisi);
+   }
 
    // Temps d'execution
    auto post = std::chrono::high_resolution_clock::now();
@@ -52,7 +39,7 @@ BT_Noeud::ETAT_ELEMENT Inspection::execute() noexcept {
 }
 
 
-void Inspection::saveScore(MapTile tile, Npc& npc, vector<int> tilesAVisiter) noexcept {
+void Inspection::saveScore(MapTile tile) noexcept {
    // Precondition : tile.statut != inspectable
    float score = 0;
 
@@ -65,15 +52,15 @@ void Inspection::saveScore(MapTile tile, Npc& npc, vector<int> tilesAVisiter) no
    float interetTile = tile.getVoisinsMursNonInspecte().size();
    if (interetTile == 0) return; // Si pas d'intêret, la tile ne nous intéresse pas !
    score += interetTile * COEF_INTERET;
-   
 
-                                 // On regarde la distance moyenne de cette tuile aux autres tuiles déjà visités
-   if (!tilesAVisiter.empty()) {
+
+   // On regarde la distance moyenne de cette tuile aux autres tuiles déjà visités
+   if (!gm.tilesAVisiter.empty()) {
       float distanceMoyenneTiles = 0;
-      for (auto autre : tilesAVisiter) {
+      for (auto autre : gm.tilesAVisiter) {
          distanceMoyenneTiles += gm.m.distanceHex(tile.getId(), autre);
       }
-      distanceMoyenneTiles /= tilesAVisiter.size();
+      distanceMoyenneTiles /= gm.tilesAVisiter.size();
       score += distanceMoyenneTiles * COEF_DISTANCE_TILE_AUTRE_TILES;
    }
 
@@ -82,10 +69,10 @@ void Inspection::saveScore(MapTile tile, Npc& npc, vector<int> tilesAVisiter) no
 }
 
 
-void Inspection::calculerScore1Tile(int tileID, Map& m, Npc& npc, const vector<int> tilesAVisiter) {
+void Inspection::calculerScore1Tile(int tileID, Map& m) {
    MapTile tile = m.getTile(tileID);
    // On ne considère la tile que si on ne la visite pas déjà !
-   if ((tile.getStatut() != MapTile::INSPECTEE) && find(tilesAVisiter.begin(), tilesAVisiter.end(), tile.getId()) == tilesAVisiter.end()) {
-      saveScore(tile, npc, tilesAVisiter);
+   if ((tile.getStatut() != MapTile::INSPECTEE) && find(gm.tilesAVisiter.begin(), gm.tilesAVisiter.end(), tile.getId()) == gm.tilesAVisiter.end()) {
+      saveScore(tile);
    }
 }

@@ -3,8 +3,8 @@
 #include "MyBotLogic/BehaviorTree/BT_Noeud.h"
 #include "MyBotLogic/GameManager.h"
 
-Exploration::Exploration(GameManager& gm)
-   : ScoreStrategie(gm, "Exploration")
+Exploration::Exploration(GameManager& gm, Npc& npc)
+   : ScoreStrategie(gm, npc, "Exploration")
 {
 }
 
@@ -13,7 +13,7 @@ Exploration::Exploration(GameManager& gm)
 // La distance du npc à la tuile
 // La distance moyenne de cette tuile aux autres tuiles qui seront visités !
 // Le degré d'intêret de la tuile. 
-void Exploration::saveScore(MapTile tile, Npc& npc, vector<int> tilesAVisiter) noexcept {
+void Exploration::saveScore(MapTile tile) noexcept {
    float score = 0;
 
    // Si on a déjà visité cette case, son score est nul
@@ -29,12 +29,12 @@ void Exploration::saveScore(MapTile tile, Npc& npc, vector<int> tilesAVisiter) n
    if (interetTile == 0) return; // Si pas d'intêret, la tile ne nous intéresse pas !
 
                                  // On regarde la distance moyenne de cette tuile aux autres tuiles déjà visités
-   if (!tilesAVisiter.empty()) {
+   if (!gm.tilesAVisiter.empty()) {
       float distanceMoyenneTiles = 0;
-      for (auto autre : tilesAVisiter) {
+      for (auto autre : gm.tilesAVisiter) {
          distanceMoyenneTiles += gm.m.distanceHex(tile.getId(), autre);
       }
-      distanceMoyenneTiles /= tilesAVisiter.size();
+      distanceMoyenneTiles /= gm.tilesAVisiter.size();
       score += distanceMoyenneTiles * COEF_DISTANCE_TILE_AUTRE_TILES;
    }
 

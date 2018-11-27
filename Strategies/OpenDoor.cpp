@@ -3,58 +3,45 @@
 #include <chrono>
 
 BT_Noeud::ETAT_ELEMENT OpenDoor::execute() noexcept {
-    auto pre = std::chrono::high_resolution_clock::now();
 
-    GameManager::Log("OpenDoor");
+   GameManager::Log("OpenDoor");
 
-    vector<int> isolatedClosedDoors = gm.m.getIsolatedClosedDoors();
-    bool echecOpenDoor = true;
-
-    for (auto& npc : gm.getNpcs()) {
-        // On regarde si l'on peut ouvrir une porte
-        if (!isolatedClosedDoors.empty()) {
-            const Flood* ensembleAccessible = npc.getEnsembleAccessible();
-            // Prendre une porte isolée si elle est accessible
-            for (auto doorID : isolatedClosedDoors) {
-                ObjectInfo object = gm.m.getPortes()[doorID];
-                // On détermine les tuiles adjacente à la porte
-                int goal1ID = object.tileID;
-                int goal2ID = gm.m.getAdjacentTileAt(goal1ID, object.position);
-                // Si on est devant la porte, on interagit
-                if (npc.getTileId() == goal1ID || npc.getTileId() == goal2ID) {
-                    npc.openDoor(doorID);
-                    gm.m.addInteractObject(doorID);
-                    isolatedClosedDoors.erase(find(isolatedClosedDoors.begin(), isolatedClosedDoors.end(), doorID));
-                    GameManager::Log("npc " + to_string(npc.getId()) + " interact with door " + to_string(doorID));
-                    echecOpenDoor = false;
-                    break;
-                } // Sinon on regarde si ces tuiles sont accessibles et on y va
-                else {
-                    if (ensembleAccessible->is_flooded(goal1ID)) {
-                        npc.setChemin(gm.m.aStar(npc.getTileId(), goal1ID));
-                        isolatedClosedDoors.erase(find(isolatedClosedDoors.begin(), isolatedClosedDoors.end(), doorID));
-                        echecOpenDoor = false;
-                        break;
-                    }
-                    else if (ensembleAccessible->is_flooded(goal1ID)) {
-                        npc.setChemin(gm.m.aStar(npc.getTileId(), goal2ID));
-                        isolatedClosedDoors.erase(find(isolatedClosedDoors.begin(), isolatedClosedDoors.end(), doorID));
-                        echecOpenDoor = false;
-                        break;
-                    }
-                    else {
-                        GameManager::Log("Porte isolée " + to_string(doorID) + " non accessible");
-                    }
-                }
+   // On regarde si l'on peut ouvrir une porte
+   if (!gm.isolatedClosedDoorsToOpen.empty()) {
+      const Flood* ensembleAccessible = npc.getEnsembleAccessible();
+      // Prendre une porte isolée si elle est accessible
+      for (auto doorID : gm.isolatedClosedDoorsToOpen) {
+         ObjectInfo object = gm.m.getPortes()[doorID];
+         // On détermine les tuiles adjacente à la porte
+         int goal1ID = object.tileID;
+         int goal2ID = gm.m.getAdjacentTileAt(goal1ID, object.position);
+         // Si on est devant la porte, on interagit
+         if (npc.getTileId() == goal1ID || npc.getTileId() == goal2ID) {
+            npc.openDoor(doorID);
+            gm.m.addInteractObject(doorID);
+            gm.isolatedClosedDoorsToOpen.erase(find(gm.isolatedClosedDoorsToOpen.begin(), gm.isolatedClosedDoorsToOpen.end(), doorID));
+            GameManager::Log("npc " + to_string(npc.getId()) + " interact with door " + to_string(doorID));
+            return ETAT_ELEMENT::REUSSI;
+         } // Sinon on regarde si ces tuiles sont accessibles et on y va
+         else {
+            if (ensembleAccessible->is_flooded(goal1ID)) {
+               npc.setChemin(gm.m.aStar(npc.getTileId(), goal1ID));
+               gm.tilesAVisiter.push_back(npc.getChemin().getFirst()); // Verifier si first est dir ou suiv !!!
+               gm.isolatedClosedDoorsToOpen.erase(find(gm.isolatedClosedDoorsToOpen.begin(), gm.isolatedClosedDoorsToOpen.end(), doorID));
+               return ETAT_ELEMENT::REUSSI;
             }
-        }
-    }
+            else if (ensembleAccessible->is_flooded(goal2ID)) {
+               npc.setChemin(gm.m.aStar(npc.getTileId(), goal2ID));
+               gm.isolatedClosedDoorsToOpen.erase(find(gm.isolatedClosedDoorsToOpen.begin(), gm.isolatedClosedDoorsToOpen.end(), doorID));
+               return ETAT_ELEMENT::REUSSI;
+            }
+            else {
+               GameManager::Log("Porte isolée " + to_string(doorID) + " non accessible");
+            }
+         }
+      }
+   }
 
+   return ETAT_ELEMENT::ECHEC;
 
-    // Temps d'execution
-    auto post = std::chrono::high_resolution_clock::now();
-    GameManager::Log("Durée Inspection = " + to_string(std::chrono::duration_cast<std::chrono::microseconds>(post - pre).count() / 1000.f) + "ms");
-    if(!echecOpenDoor)
-        return ETAT_ELEMENT::REUSSI;
-    else return ETAT_ELEMENT::ECHEC;
 }
