@@ -23,6 +23,7 @@ private:
    int id;
    int tileId; // Sa position sur la carte
    int tileObjectif; // Là où il doit aller !
+   int tileGoal; //le but final à atteindre
    Chemin chemin; // Utilisé pour savoir quel chemin suivre pour se rendre à l'objectif
    //vector<int> ensembleAccessible; // ensemble des tuiles auquel un npc à accès
    Flood* associated_flood;
@@ -63,6 +64,7 @@ public:
    int getInteractWall() noexcept;
    int getInteractDoor() noexcept;
    void setTileObjectif(int idTile);
+   void setTileGoal(int idTile);
    const Chemin& getChemin() const noexcept;
    Chemin& getChemin() noexcept;
    void setChemin(const Chemin& chemin);
