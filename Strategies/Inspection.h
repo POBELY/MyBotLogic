@@ -5,7 +5,7 @@
 #include "../GameManager.h"
 #include "ScoreStrategie.h"
 
-class Inspection : public ScoreStrategie {;
+class Inspection : public ScoreStrategie {
 
 public:
    Inspection(GameManager& gm) : ScoreStrategie(gm,"Inspection") {}
