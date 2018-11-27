@@ -10,6 +10,8 @@ using namespace std;
 
 class tile_inaccessible {};
 
+class Flood;
+
 class Map;
 class Npc {
 private:
@@ -20,7 +22,8 @@ private:
    int tileId; // Sa position sur la carte
    int tileObjectif; // Là où il doit aller !
    Chemin chemin; // Utilisé pour savoir quel chemin suivre pour se rendre à l'objectif
-   vector<int> ensembleAccessible; // ensemble des tuiles auquel un npc à accès
+   //vector<int> ensembleAccessible; // ensemble des tuiles auquel un npc à accès
+   Flood* associated_flood;
    bool estArrive; // indique si le npc a atteind son objectif
    int interactWall = -1;
    int interactDoor = -1;
@@ -37,7 +40,7 @@ public:
    void addScore(int tileIndice, float score) noexcept;
    Chemin getCheminMinNonPris(vector<int> objectifsPris, int tailleCheminMax) const noexcept; // Permet de trouver le chemin le plus court qui ne soit pas déjà pris
    int affecterMeilleurChemin(Map &m) noexcept; // Affecte au npc le chemin avec le meilleur score et renvoie la destination de ce chemin !
-   const vector<int>& floodfill(Map &m); // Calcule le coût et l'ensemble des tiles accessibles pour un npcs, et MAJ ses attributs.
+   void floodfill(Map &m); // Calcule le coût et l'ensemble des tiles accessibles pour un npcs, et MAJ ses attributs.
    void inspectWall(int wallID);
    void openDoor(int doorID);
 
@@ -55,12 +58,12 @@ public:
    Chemin& getChemin() noexcept;
    void setChemin(const Chemin& chemin);
    void setChemin(Chemin&& chemin);
-   const vector<int>& getEnsembleAccessible() const noexcept;
+   const Flood* getEnsembleAccessible() const noexcept;
+   Flood* getEnsembleAccessible() noexcept;
    bool isAccessibleTile(int tileId) const;
    bool isArrived() const;
    void setArrived(bool etat);
-   void setEnsembleAccessible(const vector<int>& newEnsembleAccessible);
-   void setEnsembleAccessible(vector<int>&& newEnsembleAccessible);
+   void setEnsembleAccessible(Flood* associated_flooding);
 };
 
 #endif
