@@ -61,8 +61,11 @@ SET( AIBOT_HEADERS
 	MyBotLogic/Strategies/Expedition.h
 	MyBotLogic/Strategies/Exploitation.h
 	MyBotLogic/Strategies/Exploration.h
+	MyBotLogic/Strategies/Execution.h
 	MyBotLogic/Strategies/ScoreStrategie.h
 	MyBotLogic/Strategies/Inspection.h
+	MyBotLogic/Strategies/OpenDoor.h
+	MyBotLogic/Flood.h
 	MyBotLogic/Profileur.h
 )
 
@@ -87,8 +90,11 @@ SET( AIBOT_SRC
 	MyBotLogic/Strategies/Expedition.cpp
 	MyBotLogic/Strategies/Exploitation.cpp
 	MyBotLogic/Strategies/Exploration.cpp
+	MyBotLogic/Strategies/Execution.cpp
 	MyBotLogic/Strategies/ScoreStrategie.cpp
 	MyBotLogic/Strategies/Inspection.cpp
+	MyBotLogic/Strategies/OpenDoor.cpp
+	MyBotLogic/Flood.cpp
 	MyBotLogic/Profileur.cpp
 	
 	#Main
