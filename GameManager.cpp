@@ -12,6 +12,7 @@
 #include "Strategies/Exploration.h"
 #include "Strategies/Exploitation.h"
 #include "Strategies/Inspection.h"
+#include "Strategies/OpenDoor.h"
 
 #include <algorithm>
 #include <tuple>
@@ -49,14 +50,15 @@ void GameManager::InitializeBehaviorTree() noexcept {
    ScoreStrategie *expedition = new Expedition(*this);
    ScoreStrategie *exploration = new Exploration(*this);
    Inspection *inspection = new Inspection(*this);
+   OpenDoor *opendoor = new OpenDoor(*this);
 
    Sequenceur *sequenceur1 = new Sequenceur({ chemins, exploitation });
 
-   Selecteur *selecteur = new Selecteur({ sequenceur1, expedition, inspection });
+   Selecteur *selecteur = new Selecteur({ sequenceur1, expedition, opendoor, inspection });
 
    Sequenceur *sequenceur2 = new Sequenceur({ objectifs, selecteur });
 
-   behaviorTreeManager = Selecteur({ sequenceur2, exploration, inspection });
+   behaviorTreeManager = Selecteur({ sequenceur2, exploration, opendoor, inspection });
 
    //Initialisation des BehaviorTree des Npcs
    for (Npc& npc : npcs) {
@@ -64,6 +66,7 @@ void GameManager::InitializeBehaviorTree() noexcept {
    }
 
    }
+
 
 vector<Mouvement> GameManager::getAllMouvements() {
    // On va récupérer la liste des mouvements
