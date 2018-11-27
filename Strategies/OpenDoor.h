@@ -6,10 +6,11 @@
 #include "ScoreStrategie.h"
 
 class OpenDoor : public BT_Feuille {
-    GameManager& gm;
+   GameManager& gm;
+   Npc& npc;
 public:
-    OpenDoor(GameManager& gm) : gm{ gm } {};
-    ETAT_ELEMENT execute() noexcept override;
+   OpenDoor(GameManager& gm, Npc& npc) : gm{ gm }, npc{ npc } {};
+   ETAT_ELEMENT execute() noexcept override;
 };
 
 #endif

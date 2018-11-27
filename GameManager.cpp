@@ -8,11 +8,8 @@
 #include "BehaviorTree/Composite/Selecteur.h"
 #include "BT_Tests/ObjectifsForAllNpcs.h"
 #include "BT_Tests/CheminsForAllNpcs.h"
-#include "Strategies/Expedition.h"
-#include "Strategies/Exploration.h"
 #include "Strategies/Exploitation.h"
-#include "Strategies/Inspection.h"
-#include "Strategies/OpenDoor.h"
+#include "Strategies/Execution.h"
 
 #include <algorithm>
 #include <tuple>
@@ -47,18 +44,11 @@ void GameManager::InitializeBehaviorTree() noexcept {
    ObjectifsForAllNpcs *objectifs = new ObjectifsForAllNpcs(*this);
    CheminsForAllNpcs *chemins = new CheminsForAllNpcs(*this);
    Exploitation *exploitation = new Exploitation(*this);
-   ScoreStrategie *expedition = new Expedition(*this);
-   ScoreStrategie *exploration = new Exploration(*this);
-   Inspection *inspection = new Inspection(*this);
-   OpenDoor *opendoor = new OpenDoor(*this);
+   Execution *execution = new Execution(*this);
 
-   Sequenceur *sequenceur1 = new Sequenceur({ chemins, exploitation });
+   Sequenceur *sequenceur = new Sequenceur({ objectifs, chemins, exploitation });
 
-   Selecteur *selecteur = new Selecteur({ sequenceur1, expedition, opendoor, inspection });
-
-   Sequenceur *sequenceur2 = new Sequenceur({ objectifs, selecteur });
-
-   behaviorTreeManager = Selecteur({ sequenceur2, exploration, opendoor, inspection });
+   behaviorTreeManager = Selecteur({ sequenceur, execution });
 
    //Initialisation des BehaviorTree des Npcs
    for (Npc& npc : npcs) {

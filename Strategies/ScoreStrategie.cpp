@@ -4,8 +4,8 @@
 #include "MyBotLogic/GameManager.h"
 #include <chrono>
 
-ScoreStrategie::ScoreStrategie(GameManager& gm, string nom)
-   : gm{ gm },
+ScoreStrategie::ScoreStrategie(GameManager& gm, Npc& npc, string nom)
+   : gm{ gm }, npc{ npc },
    nom{ nom }
 {
 }
@@ -18,50 +18,43 @@ BT_Noeud::ETAT_ELEMENT ScoreStrategie::execute() noexcept {
    // Pour ça chaque npc va visiter en premier les tuiles avec le plus haut score
 
    // L'ensemble des tiles que l'on va visiter
-   vector<int> tilesAVisiter;
    bool movesNoStatics = false;
 
-   for (auto& npc : gm.getNpcs()) {
-      npc.resetChemins();
+   npc.resetChemins();
 
-      // Calculer le score de chaque tile pour le npc
-      // En même temps on calcul le chemin pour aller à cette tile
-      // On stocke ces deux informations dans l'attribut cheminsPossibles du Npc
-      calculerScoresTilesPourNpc(npc, tilesAVisiter);
+   // Calculer le score de chaque tile pour le npc
+   // En même temps on calcul le chemin pour aller à cette tile
+   // On stocke ces deux informations dans l'attribut cheminsPossibles du Npc
+   calculerScoresTiles();
 
-      // Choisir la meilleure tile pour ce npc et lui affecter son chemin
-      int tileChoisi = npc.affecterMeilleurChemin(gm.m);
+   // Choisir la meilleure tile pour ce npc et lui affecter son chemin
+   int tileChoisi = npc.affecterMeilleurChemin(gm.m);
 
-      // Mettre à jour les tilesAVisiter
-      tilesAVisiter.push_back(tileChoisi);
-      if (tileChoisi != npc.getTileId()) {
-         movesNoStatics = true;
-      }
-   }
-
-   if (movesNoStatics) {
+   // Mettre à jour les tilesAVisiter
+   gm.tilesAVisiter.push_back(tileChoisi);
+   if (tileChoisi != npc.getTileId()) {
       return ETAT_ELEMENT::REUSSI;
    }
-   else {
-      GameManager::Log(nom + " Echec");
-      return ETAT_ELEMENT::ECHEC;
-   }
+
+   GameManager::Log(nom + " Echec");
+   return ETAT_ELEMENT::ECHEC;
+
 }
 
-void ScoreStrategie::calculerScore1Tile(int tileID, Map& m, Npc& npc, const vector<int> tilesAVisiter) {
+void ScoreStrategie::calculerScore1Tile(int tileID, Map& m) {
    MapTile tile = m.getTile(tileID);
    // On ne considère la tile que si on ne la visite pas déjà !
-   if ((tile.getStatut() == MapTile::Statut::CONNU || tile.getStatut() == MapTile::Statut::VISITABLE) && find(tilesAVisiter.begin(), tilesAVisiter.end(), tile.getId()) == tilesAVisiter.end()) {
-      saveScore(tile, npc, tilesAVisiter);
+   if ((tile.getStatut() == MapTile::Statut::CONNU || tile.getStatut() == MapTile::Statut::VISITABLE) && find(gm.tilesAVisiter.begin(), gm.tilesAVisiter.end(), tile.getId()) == gm.tilesAVisiter.end()) {
+      saveScore(tile);
    }
 }
 
 // Calcul le score de chaque tiles et son chemin pour un npc
 // On prend en compte les tilesAVisiter des autres npcs pour que les tiles soient loins les unes des autres
-void ScoreStrategie::calculerScoresTilesPourNpc(Npc& npc, vector<int> tilesAVisiter) noexcept {
+void ScoreStrategie::calculerScoresTiles() noexcept {
    //GameManager::Log("Taille ensemble : " + to_string(npc.getEnsembleAccessible().size()));
    for (auto tileID : npc.getEnsembleAccessible()->tiles()) { // parcours toutes les tiles découvertes par l'ensemble des npcs et qui sont accessibles
-      calculerScore1Tile(tileID, gm.m, npc, tilesAVisiter);
+      calculerScore1Tile(tileID, gm.m);
    }
 }
 

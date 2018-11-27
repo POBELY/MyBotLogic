@@ -1,8 +1,8 @@
 
 #include "Expedition.h"
 
-Expedition::Expedition(GameManager& gm)
-   : ScoreStrategie(gm, "Expedition")
+Expedition::Expedition(GameManager& gm, Npc& npc)
+   : ScoreStrategie(gm, npc, "Expedition")
 {
 }
 
@@ -12,7 +12,7 @@ Expedition::Expedition(GameManager& gm)
 // La distance moyenne de cette tile à tous les objectifs
 // La distance moyenne de cette tuile aux autres tuiles qui seront visités !
 // Le degré d'intêret de la tuile. 
-void Expedition::saveScore(MapTile tile, Npc& npc, vector<int> tilesAVisiter) noexcept {
+void Expedition::saveScore(MapTile tile) noexcept {
    // Précondition : tile.statut == CONNU
    float score = 0;
 
@@ -37,12 +37,12 @@ void Expedition::saveScore(MapTile tile, Npc& npc, vector<int> tilesAVisiter) no
    score += distanceMoyenne * COEF_DISTANCE_OBJECTIFS_TILE;
 
    // On regarde la distance moyenne de cette tuile aux autres tuiles déjà visités
-   if (!tilesAVisiter.empty()) {
+   if (!gm.tilesAVisiter.empty()) {
       float distanceMoyenneTiles = 0;
-      for (auto autre : tilesAVisiter) {
+      for (auto autre : gm.tilesAVisiter) {
          distanceMoyenneTiles += gm.m.distanceHex(tile.getId(), autre);
       }
-      distanceMoyenneTiles /= tilesAVisiter.size();
+      distanceMoyenneTiles /= gm.tilesAVisiter.size();
       score += distanceMoyenneTiles * COEF_DISTANCE_TILE_AUTRE_TILES;
    }
 
