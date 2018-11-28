@@ -23,6 +23,10 @@ void Exploration::saveScore(MapTile tile) noexcept {
    //score += gm.m.getDistance(npc.getTileId(), tile.getId()) * COEF_DISTANCE_NPC_TILE;
    score += gm.m.distanceHex(npc.getTileId(), tile.getId()) * COEF_DISTANCE_NPC_TILE;
 
+   if (npc.getTileGoal() != -1 ) {
+	   score += gm.m.distanceHex(tile.getId(), npc.getTileGoal()) * COEF_DISTANCE_NPC_GOAL;
+   }
+
    // On regarde l'intêret de cette tile
    float interetTile = interet(tile);
    score += interetTile * COEF_INTERET;

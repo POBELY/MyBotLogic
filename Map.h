@@ -14,6 +14,7 @@ class tile_inexistante {};
 
 class MapTile;
 class Npc;
+class GameManager;
 class Map {
     int rowCount;
     int colCount;
@@ -45,6 +46,7 @@ public:
     int tailleCheminMax() const noexcept; // Permet de savoir la taille maximum d'un chemin
 
     void addTile(TileInfo) noexcept; // Permet de rajouter une tile à la map
+	void addTile(TileInfo, GameManager& gm) noexcept;
     void addObject(ObjectInfo) noexcept; // Permet de rajouter un object à la map
     void addInteractObject(int objectID);
     void viderInteractObjects();

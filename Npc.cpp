@@ -221,6 +221,11 @@ void Npc::setTileGoal(int idTile) {
 	tileGoal = idTile;
 }
 
+int Npc::getTileGoal()
+{
+	return tileGoal;
+}
+
 const Chemin& Npc::getChemin() const noexcept {
    return chemin;
 }

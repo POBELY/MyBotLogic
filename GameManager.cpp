@@ -22,7 +22,7 @@ Logger GameManager::logger{};
 Logger GameManager::loggerRelease{};
 
 GameManager::GameManager(LevelInfo info) :
-    m{ Map(info) },
+	m{Map(info)} ,
     objectifPris{ vector<int>{} }
 {
     floods.reserve(info.npcs.size());
@@ -36,6 +36,10 @@ GameManager::GameManager(LevelInfo info) :
         npcs.back().setEnsembleAccessible(floods.back().get());
     }
 
+	//initialisation des tileGoals
+	for (unsigned int tileId : m.getObjectifs()) {
+		setNpcsGoalTile(tileId);
+	}
     updateFlux();
 }
 
@@ -214,7 +218,7 @@ void GameManager::addNewTiles(TurnInfo ti) noexcept {
             // Si ces tuiles n'ont pas été découvertes
             if (m.getTile(tileId).getStatut() == MapTile::INCONNU) {
                // On les setDecouverte
-               m.addTile(ti.tiles[tileId]);
+               m.addTile(ti.tiles[tileId],*this);
             }
          }
       }
@@ -434,4 +438,20 @@ bool GameManager::isDoorAdjacente(int interrupteurID) {
       }
    }
    return false;
+}
+
+void GameManager::setNpcsGoalTile(unsigned int tileId)
+{
+	Npc* closest_npc = &getNpcs()[0];
+	int distMin = m.getRowCount() * m.getColCount();
+	for (Npc& npc : getNpcs()) {
+		if (npc.getTileGoal() == -1) {
+			int dist = m.distanceHex(npc.getTileId(), tileId);
+			if (dist < distMin) {
+				closest_npc = &npc;
+				distMin = dist;
+			}
+		}
+	}
+	closest_npc->setTileGoal(tileId);
 }
