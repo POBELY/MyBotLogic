@@ -32,6 +32,7 @@ BT_Noeud::ETAT_ELEMENT OpenDoor::execute() noexcept {
             }
             else if (ensembleAccessible->is_flooded(goal2ID)) {
                npc.setChemin(gm.m.aStar(npc.getTileId(), goal2ID));
+               gm.tilesAVisiter.push_back(npc.getChemin().getFirst()); // Verifier si first est dir ou suiv !!!
                gm.isolatedClosedDoorsToOpen.erase(find(gm.isolatedClosedDoorsToOpen.begin(), gm.isolatedClosedDoorsToOpen.end(), doorID));
                return ETAT_ELEMENT::REUSSI;
             }

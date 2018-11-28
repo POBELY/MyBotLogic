@@ -66,7 +66,10 @@ float Exploration::interet(MapTile tile) noexcept {
 
    //Score activateur
    if (tile.hadActivateur()) {
-      interet += COEF_ACTIVATEUR;
+      // Attention : cas plusieurs NPC non considéré
+      if (gm.isDoorAdjacente(tile.getActivateur())) {
+         interet += COEF_ACTIVATEUR;
+      }
    }
 
    interet += nbInconnuesAccessibles * COEF_INTERET_ACCESSIBLE;

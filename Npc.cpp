@@ -29,6 +29,7 @@ void Npc::initializeBehaviorTree(GameManager& gm) noexcept {
 }
 
 void Npc::move(Tile::ETilePosition direction, Map &m) noexcept {
+   if (m.getTile(tileId).hadActivateur() && direction != Tile::ETilePosition::CENTER) m.quitButton = true;
    tileId = m.getAdjacentTileAt(tileId, direction);
    m.getTile(tileId).setStatut(MapTile::Statut::VISITE);
 }

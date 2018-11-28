@@ -38,6 +38,7 @@ public:
    void unmerge_floods();
    void merge_floods();
    void grow_floods();
+   void init_floods();
    void updateFlux() noexcept;
    void InitializeBehaviorTree() noexcept; // Permet d'initialiser le BT
    void execute() noexcept {
