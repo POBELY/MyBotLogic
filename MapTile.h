@@ -21,8 +21,9 @@ private:
    vector<int> voisinsAccessibles; // les voisins connus et accessible (pas de murs ni de fenêtres) y compris les voisinsMysterious
    vector<int> voisinsVisibles; // les voisins visibles (contient les voisins accessibles et les voisins fenetres)
    vector<int> voisinsMysterious; // les voisins sur lequel on a pas encore d'information
-   vector<int> voisinsMurs; //ce sont les murs entourant la Tile
-   vector<int> voisinsMursNonInspectee; //ce sont les murs entourant la Tile
+   vector<int> voisinsMurs = {}; //ce sont les murs entourant la Tile
+   vector<int> voisinsMursNonInspectee = {}; //ce sont les murs entourant la Tile
+   vector<int> voisinsIsolatedClosedDoors = {}; //ce sont les portes isolées entourant la Tile
    int activateur = -1;
    Statut statut;
 
@@ -36,7 +37,9 @@ public:
    void removeVisible(int id);
    void removeMurNonInspectee(int id);
    void removeMur(int id);
+   void removeIsolatedClosedDoor(int id);
    void addMur(int id);
+   void addIsolatedClosedDoor(int id);
    void setActivateur(int id);
    int inspecter();
 
@@ -45,6 +48,7 @@ public:
    bool isVoisinVisible(int id) const noexcept;
    bool isVoisinMysterious(int id) const noexcept;
    bool hadActivateur() const noexcept;
+   bool hadisolatedClosedDoors() const noexcept;
 
    bool existe() const noexcept;
    bool inspectable() const noexcept;
@@ -68,6 +72,7 @@ public:
    Statut getStatut() const noexcept;
    bool isAccessible() const noexcept;
    void setStatut(Statut new_statut);
+   int getIsolatedClosedDoor();
 };
 
 #endif

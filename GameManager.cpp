@@ -99,6 +99,8 @@ void GameManager::moveNpcs(vector<Action*>& actionList) noexcept {
    // Cad que si deux Npcs peuvent échanger leurs objectifs et que cela diminue leurs chemins respectifs, alors il faut le faire !
    reafecterObjectifsSelonDistance();
 
+   openDoors();
+
    // On récupère tous les mouvements
    vector<Mouvement> mouvements = getAllMouvements();
 
@@ -444,4 +446,32 @@ bool GameManager::isDoorAdjacente(int interrupteurID) {
       }
    }
    return false;
+}
+
+void GameManager::openDoors() {
+   for (Npc& npc : npcs) {
+      MapTile& npcTile = m.getTile(npc.getTileId());
+      if (npcTile.hadisolatedClosedDoors()) {
+         int doorID = npcTile.getIsolatedClosedDoor();
+         npc.openDoor(doorID);
+         m.addInteractObject(doorID);
+         // Suprime la porte de la tile courante
+         npcTile.removeIsolatedClosedDoor(doorID);
+         // Suprimer la porte de la seconde tile à laquelle elle est voisine
+         ObjectInfo door = m.getPortes()[doorID];
+         int tiledoorID = door.tileID;
+         if (door.tileID == npc.getTileId()) {
+            tiledoorID = m.getAdjacentTileAt(door.tileID, door.position);
+         }
+         m.getTile(tiledoorID).removeIsolatedClosedDoor(doorID);
+         // Supprime la porte du modèle
+         m.getIsolatedClosedDoors().erase(find(m.getIsolatedClosedDoors().begin(), m.getIsolatedClosedDoors().end(), doorID)); // Supprimer la porte des portes isolés du modèle
+         // Suprimer les mouvements du Npc
+         npc.getChemin().resetChemin();
+         npc.getChemin().addFirst(npc.getTileId());
+
+         GameManager::Log("npc " + to_string(npc.getId()) + " interact with door " + to_string(doorID));
+
+      }
+   }
 }

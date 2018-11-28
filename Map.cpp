@@ -448,20 +448,24 @@ void Map::addObject(ObjectInfo object) noexcept {
                      if (isInMap(voisin1)) {
                         tiles[voisin1].removeMurNonInspectee(object.objectID);
                         tiles[voisin1].removeMur(object.objectID);
+                        tiles[voisin1].addIsolatedClosedDoor(object.objectID);
                      }
                      if (isInMap(voisin2)) {
                         tiles[voisin2].removeMurNonInspectee(object.objectID);
                         tiles[voisin2].removeMur(object.objectID);
+                        tiles[voisin2].addIsolatedClosedDoor(object.objectID);
                      }
                   } else {
                      
                      if (isInMap(voisin1)) {
                         tiles[voisin1].removeAccessible(voisin2);
                         tiles[voisin1].removeVisible(voisin2);
+                        tiles[voisin1].addIsolatedClosedDoor(object.objectID);
                      }
                      if (isInMap(voisin2)) {
                         tiles[voisin2].removeAccessible(voisin1);
                         tiles[voisin2].removeVisible(voisin1);
+                        tiles[voisin2].addIsolatedClosedDoor(object.objectID);
                      }
                   }
                
@@ -479,10 +483,6 @@ void Map::addObject(ObjectInfo object) noexcept {
             }
         // Porte ouverte
         } else {
-           // Si on vient d'ouvrir la porte, on la suprime des portes isolés fermés
-           if (hadInteract(object.objectID)) {
-              isolatedClosedDoors.erase(find(isolatedClosedDoors.begin(), isolatedClosedDoors.end(), object.objectID));
-           }
            // Si la porte est ouverte on est accessible ET visible ! =)
            vector<int> voisins1Accessibles = tiles[voisin1].getVoisinsAccessibles();
            if (find(voisins1Accessibles.begin(), voisins1Accessibles.end(), voisin2) == voisins1Accessibles.end()) {
@@ -499,7 +499,6 @@ void Map::addObject(ObjectInfo object) noexcept {
     if (object.objectTypes.find(Object::ObjectType_PressurePlate) != object.objectTypes.end()) {
         activateurs[object.objectID] = object;
         tiles[voisin1].setActivateur(object.objectID);
-        // prout !
     }
 
     // On le note !
@@ -647,7 +646,11 @@ vector<int> Map::getInteractObjects() {
    return interactObjects;
 }
 
-vector<int> Map::getIsolatedClosedDoors() {
+vector<int> Map::getIsolatedClosedDoorsCopy() {
+   return isolatedClosedDoors;
+}
+
+vector<int>& Map::getIsolatedClosedDoors() {
    return isolatedClosedDoors;
 }
 

@@ -84,6 +84,11 @@ bool MapTile::hadActivateur() const noexcept
    return activateur != -1;
 }
 
+bool MapTile::hadisolatedClosedDoors() const noexcept
+{
+   return !voisinsIsolatedClosedDoors.empty();
+}
+
 int MapTile::getVoisinByDirection(Tile::ETilePosition direction) const noexcept {
    return voisinsDirection[direction];
 }
@@ -126,12 +131,27 @@ void MapTile::removeMur(int id) {
    }
 }
 
+void MapTile::removeIsolatedClosedDoor(int id) {
+   auto it = find(voisinsIsolatedClosedDoors.begin(), voisinsIsolatedClosedDoors.end(), id);
+   if (it != voisinsIsolatedClosedDoors.end()) {
+      voisinsIsolatedClosedDoors.erase(it);
+   }
+}
+
 void MapTile::addMur(int id)
 {
    auto it = find(voisinsMurs.begin(), voisinsMurs.end(), id);
    if (it == voisinsMurs.end()) {
       voisinsMurs.push_back(id);
       voisinsMursNonInspectee.push_back(id);
+   }
+}
+
+void MapTile::addIsolatedClosedDoor(int id)
+{
+   auto it = find(voisinsIsolatedClosedDoors.begin(), voisinsIsolatedClosedDoors.end(), id);
+   if (it == voisinsIsolatedClosedDoors.end()) {
+      voisinsIsolatedClosedDoors.push_back(id);
    }
 }
 
@@ -230,4 +250,8 @@ bool MapTile::isAccessible() const noexcept {
 
 void MapTile::setStatut(MapTile::Statut new_statut) {
    statut = new_statut;
+}
+
+int MapTile::getIsolatedClosedDoor() {
+   return voisinsIsolatedClosedDoors.back();
 }

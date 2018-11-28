@@ -31,8 +31,8 @@ BT_Noeud::ETAT_ELEMENT ScoreStrategie::execute() noexcept {
    int tileChoisi = npc.affecterMeilleurChemin(gm.m);
 
    // Mettre à jour les tilesAVisiter
-   gm.tilesAVisiter.push_back(tileChoisi);
    if (tileChoisi != npc.getTileId()) {
+      gm.tilesAVisiter.push_back(tileChoisi);
       return ETAT_ELEMENT::REUSSI;
    }
 
