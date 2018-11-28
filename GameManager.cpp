@@ -383,7 +383,6 @@ void GameManager::merge_floods() {
         // Si i n'est pas à effacer
         if (to_erase_iterator == toErase.end()) {
             for (int j = i + 1; j < shared_floods_mapping.size(); ++j) {
-                // non 0 mais indice de tuile visite ou visitable !!! A FAIRE
                 Npc& owner_flood_i = getNpcById(shared_floods_mapping[i].front());
                 Npc& owner_flood_j = getNpcById(shared_floods_mapping[j].front());
 
@@ -420,9 +419,20 @@ void GameManager::grow_floods() {
     }
 }
 
+void GameManager::init_floods() {
+   PROFILE_SCOPE("init floods");
+
+   for (auto& npc : npcs) {
+      npc.getEnsembleAccessible()->reset(npc.getTileId());
+   }
+
+   m.quitButton = false;
+}
+
 void GameManager::updateFlux() noexcept {
     PROFILE_SCOPE("updateFlux");
 
+    if (m.quitButton) init_floods();
     unmerge_floods();
     grow_floods();
     merge_floods();
