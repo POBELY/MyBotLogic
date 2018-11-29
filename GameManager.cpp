@@ -258,6 +258,9 @@ void GameManager::updateModel(const TurnInfo &ti) noexcept {
 
    // Mettre à jour les flux de nos NPCs
    updateFlux();
+
+   // Mettre à jour les cases inspectes
+   updateInspection();
 }
 
 
@@ -434,6 +437,24 @@ void GameManager::updateFlux() noexcept {
     unmerge_floods();
     grow_floods();
     merge_floods();
+}
+
+void GameManager::updateInspection() noexcept {
+   PROFILE_SCOPE("updateInspection");
+   for (MapTile& tile : m.getTiles()) {
+      if (tile.getStatut() != MapTile::INSPECTEE && tile.getStatut() != MapTile::INCONNU) {
+         bool inspecte = true;
+         for (int voisin : tile.getVoisins()) {
+            if (m.getTile(voisin).getStatut() == MapTile::Statut::INCONNU || m.getTile(voisin).getStatut() == MapTile::Statut::CONNU) {
+               inspecte = false;
+               break;
+            }
+         }
+         if (inspecte) {
+            tile.setStatut(MapTile::Statut::INSPECTEE);
+         }
+      }
+   }
 }
 
 bool GameManager::isDoorAdjacente(int interrupteurID) {

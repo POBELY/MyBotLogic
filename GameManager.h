@@ -41,6 +41,7 @@ public:
    void grow_floods();
    void init_floods();
    void updateFlux() noexcept;
+   void updateInspection() noexcept;
    void InitializeBehaviorTree() noexcept; // Permet d'initialiser le BT
    void execute() noexcept {
       ScopedProfiler p("GM Execute");

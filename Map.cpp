@@ -616,6 +616,10 @@ MapTile& Map::getTile(int id) {
     return tiles[id];
 }
 
+vector<MapTile>& Map::getTiles() {
+   return tiles;
+}
+
 const MapTile& Map::getTile(int id) const {
     if (id < 0 || id >= getNbTiles())
         throw tile_inexistante{};
