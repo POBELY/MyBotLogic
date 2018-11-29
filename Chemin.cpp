@@ -74,6 +74,14 @@ int Chemin::getFirst() const {
         return chemin.back();
 }
 
+int Chemin::getLast() const {
+
+   if (empty())
+      throw chemin_vide{};
+   else
+      return chemin[0];
+}
+
 void Chemin::resetChemin() {
     chemin.clear();
     inaccessible = false;
