@@ -19,16 +19,19 @@ void Exploration::saveScore(MapTile tile) noexcept {
    // Si on a déjà visité cette case, son score est nul
    //if (tile.statut == MapTile::Statut::VISITE) return; // Appelé que si statut CONNU => non nécessaire
 
-   // On enregistre le cout, cad la distanc npc-tile
-   //score += gm.m.getDistance(npc.getTileId(), tile.getId()) * COEF_DISTANCE_NPC_TILE;
-   score += gm.m.distanceHex(npc.getTileId(), tile.getId()) * COEF_DISTANCE_NPC_TILE;
+   // Présence de portes isolés fermés
+   score += tile.getIsolatedClosedDoors().size() * COEF_PRESENCE_PORTE;
 
    // On regarde l'intêret de cette tile
    float interetTile = interet(tile);
    score += interetTile * COEF_INTERET;
-   if (interetTile == 0) return; // Si pas d'intêret, la tile ne nous intéresse pas !
+   if (score == 0) return; // Si pas d'intêret, la tile ne nous intéresse pas !
 
-                                 // On regarde la distance moyenne de cette tuile aux autres tuiles déjà visités
+   // On enregistre le cout, cad la distanc npc-tile
+   //score += gm.m.getDistance(npc.getTileId(), tile.getId()) * COEF_DISTANCE_NPC_TILE;
+   score += gm.m.distanceHex(npc.getTileId(), tile.getId()) * COEF_DISTANCE_NPC_TILE;
+
+   // On regarde la distance moyenne de cette tuile aux autres tuiles déjà visités
    if (!gm.tilesAVisiter.empty()) {
       float distanceMoyenneTiles = 0;
       for (auto autre : gm.tilesAVisiter) {
@@ -37,9 +40,6 @@ void Exploration::saveScore(MapTile tile) noexcept {
       distanceMoyenneTiles /= gm.tilesAVisiter.size();
       score += distanceMoyenneTiles * COEF_DISTANCE_TILE_AUTRE_TILES;
    }
-
-   // Présence de portes isolés fermés
-   score += tile.getIsolatedClosedDoors().size() * COEF_PRESENCE_PORTE;
 
    // Il reste à affecter le score et le chemin au npc
    npc.addScore(tile.getId(), score);
