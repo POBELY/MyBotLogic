@@ -73,6 +73,7 @@ public:
    bool isAccessible() const noexcept;
    void setStatut(Statut new_statut);
    int getIsolatedClosedDoor();
+   vector<int>& getIsolatedClosedDoors();
 };
 
 #endif
