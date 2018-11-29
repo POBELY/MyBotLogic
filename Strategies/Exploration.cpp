@@ -22,14 +22,14 @@ void Exploration::saveScore(MapTile tile) noexcept {
    // Présence de portes isolés fermés
    score += tile.getIsolatedClosedDoors().size() * COEF_PRESENCE_PORTE;
 
-   if (npc.getTileGoal() != -1 ) {
-	   score += gm.m.distanceHex(tile.getId(), npc.getTileGoal()) * COEF_DISTANCE_NPC_GOAL;
-   }
-
    // On regarde l'intêret de cette tile
    float interetTile = interet(tile);
    score += interetTile * COEF_INTERET;
    if (score == 0) return; // Si pas d'intêret, la tile ne nous intéresse pas !
+
+   if (npc.getTileGoal() != -1) {
+	   score += gm.m.distanceHex(tile.getId(), npc.getTileGoal()) * COEF_DISTANCE_NPC_GOAL;
+   }
 
    // On enregistre le cout, cad la distanc npc-tile
    //score += gm.m.getDistance(npc.getTileId(), tile.getId()) * COEF_DISTANCE_NPC_TILE;
