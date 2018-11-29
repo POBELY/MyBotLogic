@@ -65,7 +65,7 @@ public:
    int getInteractDoor() noexcept;
    void setTileObjectif(int idTile);
    void setTileGoal(int idTile);
-   int getTileGoal();
+   int getTileGoal() const;
    const Chemin& getChemin() const noexcept;
    Chemin& getChemin() noexcept;
    void setChemin(const Chemin& chemin);

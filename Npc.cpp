@@ -222,7 +222,7 @@ void Npc::setTileGoal(int idTile) {
 	tileGoal = idTile;
 }
 
-int Npc::getTileGoal()
+int Npc::getTileGoal() const
 {
 	return tileGoal;
 }

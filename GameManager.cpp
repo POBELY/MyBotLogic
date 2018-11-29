@@ -452,20 +452,16 @@ bool GameManager::isDoorAdjacente(int interrupteurID) {
    return false;
 }
 
-void GameManager::setNpcsGoalTile(unsigned int tileId)
+void GameManager::setNpcsGoalTile(unsigned int goalTileId)
 {
-	Npc* closest_npc = &getNpcs()[0];
-	int distMin = m.getRowCount() * m.getColCount();
-	for (Npc& npc : getNpcs()) {
-		if (npc.getTileGoal() == -1) {
-			int dist = m.distanceHex(npc.getTileId(), tileId);
-			if (dist < distMin) {
-				closest_npc = &npc;
-				distMin = dist;
-			}
-		}
-	}
-	closest_npc->setTileGoal(tileId);
+	auto it = std::min_element(getNpcs().begin(), getNpcs().end(), [this, goalTileId](const Npc& a, const Npc& b) {
+		if (a.getTileGoal() != -1) return false;
+		if (b.getTileGoal() != -1) return true;
+
+		return m.distanceHex(a.getTileId(), goalTileId) < m.distanceHex(b.getTileId(), goalTileId);
+	});
+
+	it->setTileGoal(goalTileId);
 }
 void GameManager::openDoors() {
    for (Npc& npc : npcs) {
