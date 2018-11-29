@@ -384,6 +384,34 @@ void Map::addTile(TileInfo tile) noexcept {
     GameManager::Log("Decouverte de la tile " + to_string(tile.tileID));
 }
 
+void Map::addTile(TileInfo tile, GameManager& gm) noexcept {
+	// On met à jour le nombre de tiles
+	++nbTilesDecouvertes;
+
+	// On la rajoute aux tiles
+	tiles[tile.tileID].setTileDecouverte(tile);
+
+	if (tiles[tile.tileID].getType() == Tile::TileAttribute_Goal) {
+		objectifs.push_back(tile.tileID);
+		gm.setNpcsGoalTile(tile.tileID);
+	}
+
+	if (tiles[tile.tileID].getType() == Tile::TileAttribute_Forbidden) {
+		for (auto voisin : tiles[tile.tileID].getVoisins()) {
+			tiles[voisin].removeAccessible(tile.tileID);
+		}
+	}
+
+	// Puis on met à jour les voisins de ses voisins ! :D
+	for (auto voisin : tiles[tile.tileID].getVoisins()) { // On pourrait parcourir les voisinsVisibles
+														  // Si ce voisin l'a en voisin mystérieux, on le lui enlève
+		tiles[voisin].removeMysterieux(tile.tileID);
+	}
+
+	// On le note !
+	GameManager::Log("Decouverte de la tile " + to_string(tile.tileID));
+}
+
 // Il ne faut pas ajouter un objet qui est déjà dans la map !
 void Map::addObject(ObjectInfo object) noexcept {
     int voisin1 = object.tileID;

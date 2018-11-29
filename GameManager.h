@@ -52,6 +52,7 @@ public:
    std::vector<Npc>& getNpcs();
    void addNpc(Npc npc);
    bool isDoorAdjacente(int interrupteurID);
+   void setNpcsGoalTile(unsigned int goalTileId);
 
    static void Log(string str) noexcept { // Permet de débugger ! :D
 #ifndef _DEBUG
