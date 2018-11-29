@@ -13,7 +13,8 @@
 
 #include <algorithm>
 #include <tuple>
-#include<chrono>
+#include <chrono>
+#include <future>
 using namespace std;
 using namespace std::chrono;
 
@@ -293,40 +294,137 @@ void GameManager::addNpc(Npc npc) {
 }
 
 void GameManager::reafecterObjectifsSelonDistance() {
-   PROFILE_SCOPE("GameManager::reafecterObjectifsSelonDistance");
-   // Tant que l'on fait des modifications on continue ...
-   bool continuer = true;
+    PROFILE_SCOPE("GameManager::reafecterObjectifsSelonDistance");
 
-   while (continuer && npcs.size() > 1) {
-      continuer = false;
+#if 0
+    std::vector<std::future<std::vector<int>>> futures;
 
-      // Pour tous les npcs ...
-      for (std::size_t npc_i = 0; npc_i < npcs.size(); ++npc_i) {
-         Npc& npc = npcs[npc_i];
-         for (std::size_t npc_j = npc_i + 1; npc_j < npcs.size(); ++npc_j) {
-            Npc& autreNpc = npcs[npc_j];
+    // Pour chaque but, on récupère la liste des npcs du plus loin au plus près
+    for(auto goal : m.getObjectifs()) {
+        futures.push_back(std::async(std::launch::async, [this, goal]() {
+            std::vector<std::pair<int, int>> distances;
+            std::vector<int> npcs;
+            npcs.reserve(getNpcs().size());
+            distances.reserve(getNpcs().size());
 
-            const int objectifNpc = npc.getShortTermObjectif();
-            const int objectifAutreNpc = autreNpc.getShortTermObjectif();
-
-            //const int tempsMaxChemins = std::max(npc.getChemin().distance(), autreNpc.getChemin().distance());
-            const int tempsMaxChemins = std::max(m.getDistance(npc.getTileId(), objectifNpc), m.getDistance(autreNpc.getTileId(), objectifAutreNpc));
-
-            // Si l'interversion des objectifs est bénéfique pour l'un deux et ne coûte rien à l'autre (ou lui est aussi bénéfique)
-            if (npc.isAccessibleTile(objectifAutreNpc)
-               && autreNpc.isAccessibleTile(objectifNpc)) {
-               if (std::max(m.getDistance(npc.getTileId(), objectifAutreNpc),
-                  m.getDistance(autreNpc.getTileId(), objectifNpc)) < tempsMaxChemins) {// Ensuite que c'est rentable
-                  EventProfiler::instance().register_instant_event("swap objectives");
-                  GameManager::Log("Npc " + to_string(npc.getId()) + " et Npc " + to_string(autreNpc.getId()) + " échangent leurs objectifs !");
-                  npc.setChemin(m.aStar(npc.getTileId(), objectifAutreNpc));
-                  autreNpc.setChemin(m.aStar(autreNpc.getTileId(), objectifNpc));
-                  continuer = true; // Et on devra continuer pour vérifier que cette intervertion n'en a pas entrainé de nouvelles !
-               }
+            for(std::size_t i = 0; i < getNpcs().size(); ++i) {
+                const int distance = m.getDistance(getNpcs()[i].getTileId(), goal);
+                if(distance > 0) {
+                    distances.emplace_back(i, distance);
+                }
             }
-         }
-      }
-   }
+
+            std::sort(distances.begin(), distances.end(), [](const auto& a, const auto& b) {
+                return b.second < a.second;
+            });
+
+            std::transform(distances.begin(), distances.end(), std::back_inserter(npcs), [](const auto& pair) {
+                return pair.first;
+            });
+
+            return npcs;
+        }));
+    }
+
+    std::vector<bool> assigned_npcs;
+    assigned_npcs.resize(npcs.size(), false);
+
+    int goal_id = 0;
+    for(std::future<std::vector<int>>& future : futures) {
+        std::vector<int> nearest_npcs = future.get();
+
+        while(assigned_npcs[nearest_npcs.back()]) {
+            nearest_npcs.pop_back();
+        }
+
+        Npc& nearest_npc_ref = getNpcs()[nearest_npcs.back()];
+
+        assigned_npcs[nearest_npcs.back()] = true;
+        nearest_npc_ref.setChemin(m.aStar(nearest_npc_ref.getTileId(), m.getObjectifs()[goal_id]));
+        ++goal_id;
+    }
+#else
+    // Tant que l'on fait des modifications on continue ...
+    bool continuer = true;
+
+    if (m.getMurs().empty()) {
+        while (continuer && npcs.size() > 1) {
+            continuer = false;
+
+            // Pour tous les npcs ...
+            for (std::size_t npc_i = 0; npc_i < npcs.size(); ++npc_i) {
+                Npc& npc = npcs[npc_i];
+                for (std::size_t npc_j = npc_i + 1; npc_j < npcs.size(); ++npc_j) {
+                    Npc& autreNpc = npcs[npc_j];
+
+                    const int objectifNpc = npc.getShortTermObjectif();
+                    const int objectifAutreNpc = autreNpc.getShortTermObjectif();
+
+                    const int d1 = m.distanceHex(npc.getTileId(), objectifNpc);// npc.getChemin().distance();
+                    const int d2 = m.distanceHex(autreNpc.getTileId(), objectifAutreNpc);// autreNpc.getChemin().distance();
+
+                    const int tempsMaxChemins = std::max(d1, d2);
+
+                    const bool is_swap_possible = npc.isAccessibleTile(objectifAutreNpc)
+                                               && autreNpc.isAccessibleTile(objectifNpc);
+                    if (is_swap_possible) {
+                        const int distance_a = m.distanceHex(npc.getTileId(), objectifAutreNpc);
+                        const int distance_b = m.distanceHex(autreNpc.getTileId(), objectifNpc);
+
+                        const int tempsMaxCheminApresChangement = std::max(distance_a, distance_b);
+                        const bool changer_apporte_gain = tempsMaxCheminApresChangement < tempsMaxChemins;
+
+                        if (changer_apporte_gain) {
+                            EventProfiler::instance().register_instant_event("swap objectives");
+                            npc.setChemin(m.aStar(npc.getTileId(), objectifAutreNpc));
+                            autreNpc.setChemin(m.aStar(autreNpc.getTileId(), objectifNpc));
+                            continuer = true; // Et on devra continuer pour vérifier que cette intervertion n'en a pas entrainé de nouvelles !
+                        }
+                    }
+                }
+            }
+        }
+    }
+    else {
+        while (continuer && npcs.size() > 1) {
+
+            continuer = false;
+
+            // Pour tous les npcs ...
+            for (std::size_t npc_i = 0; npc_i < npcs.size(); ++npc_i) {
+                Npc& npc = npcs[npc_i];
+                for (std::size_t npc_j = npc_i + 1; npc_j < npcs.size(); ++npc_j) {
+                    Npc& autreNpc = npcs[npc_j];
+
+                    const int objectifNpc = npc.getShortTermObjectif();
+                    const int objectifAutreNpc = autreNpc.getShortTermObjectif();
+
+                    const int d1 = npc.getChemin().distance();
+                    const int d2 = autreNpc.getChemin().distance();
+
+                    const int tempsMaxChemins = std::max(d1, d2);
+
+                    const bool is_swap_possible = npc.isAccessibleTile(objectifAutreNpc)
+                                               && autreNpc.isAccessibleTile(objectifNpc);
+                    if (is_swap_possible) {
+                        const int distance_a = m.getDistance(npc.getTileId(), objectifAutreNpc);
+                        const int distance_b = m.getDistance(autreNpc.getTileId(), objectifNpc);
+
+                        const int tempsMaxCheminApresChangement = std::max(distance_a, distance_b);
+                        const bool changer_apporte_gain = tempsMaxCheminApresChangement < tempsMaxChemins;
+
+                        if (changer_apporte_gain) {
+                            EventProfiler::instance().register_instant_event("swap objectives");
+                            npc.setChemin(m.aStar(npc.getTileId(), objectifAutreNpc));
+                            autreNpc.setChemin(m.aStar(autreNpc.getTileId(), objectifNpc));
+                            continuer = true; // Et on devra continuer pour vérifier que cette intervertion n'en a pas entrainé de nouvelles !
+                        }
+                    }
+                }
+            }
+        }
+    }
+#endif
 }
 
 void GameManager::unmerge_floods() {

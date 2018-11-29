@@ -59,10 +59,6 @@ bool Map::isInMap(int idTile) const noexcept {
     return idTile >= 0 && idTile < rowCount * colCount;
 }
 
-vector<unsigned int> Map::getObjectifs() const noexcept {
-    return objectifs;
-}
-
 struct Noeud {
     static float coefEvaluation;
     MapTile tile;
@@ -654,7 +650,7 @@ const MapTile& Map::getTile(int id) const {
     return tiles[id];
 }
 
-vector<unsigned int> Map::getObjectifs() {
+const vector<unsigned int>& Map::getObjectifs() const {
     return objectifs;
 }
 

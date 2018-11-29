@@ -29,7 +29,7 @@ std::ostream& operator<<(std::ostream& out, const EventProfiler::Event& ev) {
     out << "\",";
     out << "\"ts\": " << ev.tm.count() << ","
         << "\"pid\": 0,"
-        << "\"tid\": 0"
+        << "\"tid\": " << ev.tid
         << "}";
     return out;
 }
@@ -47,16 +47,19 @@ EventProfiler& EventProfiler::instance() {
 }
 
 void EventProfiler::register_start_event(const char* name) {
+    std::lock_guard<std::mutex> lock(m);
     events.emplace_back(name, EventTypes::Start, 
                         std::chrono::duration_cast<std::chrono::microseconds>(clock::now() - initial_tp));
 }
 
 void EventProfiler::register_end_event(const char* name) {
+    std::lock_guard<std::mutex> lock(m);
     events.emplace_back(name, EventTypes::End,
                         std::chrono::duration_cast<std::chrono::microseconds>(clock::now() - initial_tp));
 }
 
 void EventProfiler::register_instant_event(const char* name) {
+    std::lock_guard<std::mutex> lock(m);
     events.emplace_back(name, EventTypes::Instant,
                         std::chrono::duration_cast<std::chrono::microseconds>(clock::now() - initial_tp));
 }

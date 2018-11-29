@@ -5,6 +5,8 @@
 #include <chrono>
 #include <type_traits>
 #include <vector>
+#include <thread>
+#include <mutex>
 
 template<typename Duration, typename FN>
 Duration profile(FN fn) {
@@ -40,12 +42,22 @@ public:
     struct Event {
         EventTypes type;
         std::chrono::microseconds tm;
+        std::thread::id tid;
         const char* name;
 
         Event(const char* name, EventTypes type, std::chrono::microseconds tp) noexcept
         : type{type}
         , tm{tp}
-        , name{name} {}
+        , tid{std::this_thread::get_id()}
+        , name{name}
+        {}
+
+        Event(const char* name, EventTypes type, std::chrono::microseconds tp, std::thread::id tid) noexcept
+        : type{type}
+        , tm{tp}
+        , tid{tid}
+        , name{name}
+        {}
 
         friend std::ostream& operator<<(std::ostream& out, const Event& ev);
     };
@@ -53,6 +65,7 @@ public:
 private:
     std::vector<Event> events;
     time_point initial_tp;
+    std::mutex m;
 
     EventProfiler();
     EventProfiler(const EventProfiler&) = delete;

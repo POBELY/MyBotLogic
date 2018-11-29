@@ -253,7 +253,7 @@ Flood* Npc::getEnsembleAccessible() noexcept {
 
 bool Npc::isAccessibleTile(int tileId) const {
     assert(associated_flood);
-   return associated_flood->is_flooded(tileId);
+    return associated_flood->is_flooded(tileId);
 }
 
 bool Npc::isArrived() const {

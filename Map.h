@@ -36,7 +36,6 @@ public:
     Map() = default;
     Map(const LevelInfo);
     bool isInMap(int idTile) const noexcept;
-    vector<unsigned int> getObjectifs() const noexcept;
 
     Chemin aStar(int depart, int arrivee, float coefEvaluation = 1) noexcept; // Renvoie le chemin à parcourir pour aller du départ à l'arrivée
 
@@ -67,7 +66,7 @@ public:
     int getDistance(int tile1,int tile2);
     int getDistanceAStar(int tile1, int tile2);
 
-    vector<unsigned int> getObjectifs();
+    const vector<unsigned int>& getObjectifs() const;
     map<unsigned int, ObjectInfo> getMurs();
     map<unsigned int, ObjectInfo> getPortes();
     map<unsigned int, ObjectInfo> getFenetres();
