@@ -255,3 +255,7 @@ void MapTile::setStatut(MapTile::Statut new_statut) {
 int MapTile::getIsolatedClosedDoor() {
    return voisinsIsolatedClosedDoors.back();
 }
+
+vector<int>& MapTile::getIsolatedClosedDoors() {
+   return voisinsIsolatedClosedDoors;
+}

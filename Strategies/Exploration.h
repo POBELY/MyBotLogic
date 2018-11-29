@@ -16,6 +16,7 @@ public:
    enum { COEF_INTERET_ACCESSIBLE = 2 };
    enum { COEF_INTERET_INACCESSIBLE_MAIS_VISIBLE = 1 };
    enum { COEF_ACTIVATEUR = 1 };
+   enum { COEF_PRESENCE_PORTE = 6 };
    Exploration(GameManager&, Npc& npc);
 };
 

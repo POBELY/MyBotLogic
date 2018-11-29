@@ -38,6 +38,9 @@ void Exploration::saveScore(MapTile tile) noexcept {
       score += distanceMoyenneTiles * COEF_DISTANCE_TILE_AUTRE_TILES;
    }
 
+   // Présence de portes isolés fermés
+   score += tile.getIsolatedClosedDoors().size() * COEF_PRESENCE_PORTE;
+
    // Il reste à affecter le score et le chemin au npc
    npc.addScore(tile.getId(), score);
 }

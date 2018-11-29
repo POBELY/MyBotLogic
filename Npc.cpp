@@ -25,7 +25,7 @@ void Npc::initializeBehaviorTree(GameManager& gm) noexcept {
    ScoreStrategie *exploration = new Exploration(gm, *this);
    ScoreStrategie *inspection = new Inspection(gm, *this);
    OpenDoor *openDoor = new OpenDoor(gm, *this);
-   behaviorTreeNpc = Selecteur({ openDoor, exploration, inspection });
+   behaviorTreeNpc = Selecteur({ exploration, openDoor, inspection });
 }
 
 void Npc::move(Tile::ETilePosition direction, Map &m) noexcept {
