@@ -27,11 +27,7 @@ MyBotLogic::MyBotLogic() :
 #ifdef BOT_LOGIC_DEBUG
 	mLogger.Init(_logpath, "MyBotLogic.log");
 #endif
-
 	BOT_LOGIC_LOG(mLogger, "Configure", true);
-    /* _logpath =
-    C:\Users\dusa2404\Documents\IA\IABootCamp\AIBot_v0.59\\LocalMatchResults\aibotlog
-    */
     logpath = _logpath;
 	
 	//Write Code Here
@@ -52,8 +48,6 @@ MyBotLogic::MyBotLogic() :
     gm = GameManager(_levelInfo);
     gm.InitializeBehaviorTree();
 
-    // On associe à chaque npc son objectif !
-    //gm.associateNpcsWithObjectiv();
 }
 
 /*virtual*/ void MyBotLogic::OnGameStarted()
@@ -65,7 +59,7 @@ MyBotLogic::MyBotLogic() :
 {
     PROFILE_SCOPE("Turn");
     GameManager::Log("TURN =========================== " + to_string(_turnInfo.turnNb));
-
+    auto pre = std::chrono::high_resolution_clock::now();
     // On complète notre modèle avec l'information qu'on vient de découvrir !
     gm.updateModel(_turnInfo);
 
@@ -74,6 +68,8 @@ MyBotLogic::MyBotLogic() :
 
     // On fait se déplacer chaque Npc vers son objectif associé =)
     gm.moveNpcs(_actionList);
+    auto post = std::chrono::high_resolution_clock::now();
+    GameManager::LogRelease("Durée Tour = " + to_string(std::chrono::duration_cast<std::chrono::microseconds>(post - pre).count() / 1000.f) + "ms");
 }
 
 /*virtual*/ void MyBotLogic::Exit()

@@ -30,6 +30,7 @@ private:
    bool estArrive; // indique si le npc a atteind son objectif
    int interactWall = -1;
    int interactDoor = -1;
+   bool cross = false;
    Selecteur behaviorTreeNpc;
 
 public:
@@ -56,6 +57,7 @@ public:
 
    bool hadInspection() const noexcept;
    bool hadOpenDoor() const noexcept;
+   bool goingToCross() const noexcept { return cross; };
 
    int getId() const noexcept;
    int getTileId() const noexcept;
@@ -76,6 +78,7 @@ public:
    bool isArrived() const;
    void setArrived(bool etat);
    void setEnsembleAccessible(Flood* associated_flooding);
+   void setCross(bool newCross) { cross = newCross; };
 };
 
 #endif

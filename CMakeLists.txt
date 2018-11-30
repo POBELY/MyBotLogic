@@ -57,9 +57,14 @@ SET( AIBOT_HEADERS
 	MyBotLogic/BehaviorTree/Composite/Sequenceur.h
 	MyBotLogic/BehaviorTree/BT_Feuille.h
 	MyBotLogic/BT_Tests/ObjectifsForAllNpcs.h
+	MyBotLogic/BT_Tests/NoCrossNpc.h
 	MyBotLogic/BT_Tests/CheminsForAllNpcs.h
+	MyBotLogic/BT_Tests/InterrupteurPresence.h
+	MyBotLogic/BT_Tests/MultipleNpcs.h
 	MyBotLogic/Strategies/Expedition.h
 	MyBotLogic/Strategies/Exploitation.h
+	MyBotLogic/Strategies/CurrentGOP.h
+	MyBotLogic/Strategies/NaifGOP.h
 	MyBotLogic/Strategies/Exploration.h
 	MyBotLogic/Strategies/Execution.h
 	MyBotLogic/Strategies/ScoreStrategie.h
@@ -86,9 +91,14 @@ SET( AIBOT_SRC
 	MyBotLogic/Chemin.cpp
 	MyBotLogic/Mouvement.cpp
 	MyBotLogic/BT_Tests/ObjectifsForAllNpcs.cpp
+	MyBotLogic/BT_Tests/NoCrossNpc.cpp
 	MyBotLogic/BT_Tests/CheminsForAllNpcs.cpp
+	MyBotLogic/BT_Tests/InterrupteurPresence.cpp
+	MyBotLogic/BT_Tests/MultipleNpcs.cpp
 	MyBotLogic/Strategies/Expedition.cpp
 	MyBotLogic/Strategies/Exploitation.cpp
+	MyBotLogic/Strategies/CurrentGOP.cpp
+	MyBotLogic/Strategies/NaifGOP.cpp
 	MyBotLogic/Strategies/Exploration.cpp
 	MyBotLogic/Strategies/Execution.cpp
 	MyBotLogic/Strategies/ScoreStrategie.cpp

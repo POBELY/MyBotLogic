@@ -7,8 +7,13 @@
 #include "BehaviorTree/Composite/Sequenceur.h"
 #include "BehaviorTree/Composite/Selecteur.h"
 #include "BT_Tests/ObjectifsForAllNpcs.h"
+#include "BT_Tests/NoCrossNpc.h"
 #include "BT_Tests/CheminsForAllNpcs.h"
+#include "BT_Tests/InterrupteurPresence.h"
+#include "BT_Tests/MultipleNpcs.h"
 #include "Strategies/Exploitation.h"
+#include "Strategies/CurrentGOP.h"
+#include "Strategies/NaifGOP.h"
 #include "Strategies/Execution.h"
 
 #include <algorithm>
@@ -47,13 +52,21 @@ GameManager::GameManager(LevelInfo info) :
 void GameManager::InitializeBehaviorTree() noexcept {
    //  Création du behaviorTree Manager
    ObjectifsForAllNpcs *objectifs = new ObjectifsForAllNpcs(*this);
+   NoCrossNpc * noCrossNpc = new NoCrossNpc(*this);
    CheminsForAllNpcs *chemins = new CheminsForAllNpcs(*this);
    Exploitation *exploitation = new Exploitation(*this);
+   InterrupteurPresence *interrupteurPresence = new InterrupteurPresence(*this);
+   MultipleNpcs *multipleNpcs = new MultipleNpcs(*this);
+   CurrentGOP *currentGOP = new CurrentGOP(*this);
+   NaifGOP *naifGOP = new NaifGOP(*this);
    Execution *execution = new Execution(*this);
 
-   Sequenceur *sequenceur = new Sequenceur({ objectifs, chemins, exploitation });
 
-   behaviorTreeManager = Selecteur({ sequenceur, execution });
+   Sequenceur *sequenceurExploitation = new Sequenceur({ objectifs, chemins, noCrossNpc, exploitation });
+   Selecteur *selecteurGOP = new Selecteur({ currentGOP, naifGOP });
+   Sequenceur *sequenceurGOP = new Sequenceur({ interrupteurPresence, multipleNpcs, selecteurGOP });
+
+   behaviorTreeManager = Selecteur({ sequenceurExploitation, sequenceurGOP, execution });
 
    //Initialisation des BehaviorTree des Npcs
    for (Npc& npc : npcs) {
@@ -378,6 +391,12 @@ void GameManager::reafecterObjectifsSelonDistance() {
                             EventProfiler::instance().register_instant_event("swap objectives");
                             npc.setChemin(m.aStar(npc.getTileId(), objectifAutreNpc));
                             autreNpc.setChemin(m.aStar(autreNpc.getTileId(), objectifNpc));
+
+                            // Inverser les cross
+                            bool cross = npc.goingToCross();
+                            npc.setCross(autreNpc.goingToCross());
+                            autreNpc.setCross(cross);
+
                             continuer = true; // Et on devra continuer pour vérifier que cette intervertion n'en a pas entrainé de nouvelles !
                         }
                     }
@@ -417,6 +436,12 @@ void GameManager::reafecterObjectifsSelonDistance() {
                             EventProfiler::instance().register_instant_event("swap objectives");
                             npc.setChemin(m.aStar(npc.getTileId(), objectifAutreNpc));
                             autreNpc.setChemin(m.aStar(autreNpc.getTileId(), objectifNpc));
+
+                            // Inverser les cross
+                            bool cross = npc.goingToCross();
+                            npc.setCross(autreNpc.goingToCross());
+                            autreNpc.setCross(cross);
+
                             continuer = true; // Et on devra continuer pour vérifier que cette intervertion n'en a pas entrainé de nouvelles !
                         }
                     }

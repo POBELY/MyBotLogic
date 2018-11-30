@@ -28,6 +28,7 @@ public:
    vector<vector<unsigned int>> shared_floods_mapping;
    vector<int> tilesAVisiter = {}; // ensemble des tuiles visitées par nos Npc au cours d'un tour
    vector<int> isolatedClosedDoorsToOpen = {}; // ensemble des portes dont on ne cherche pas d'interaction sur le tour courant
+   vector<int> interrupteurActive = {};
 
    GameManager() = default;
    GameManager(LevelInfo);

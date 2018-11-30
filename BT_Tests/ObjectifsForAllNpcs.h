@@ -9,8 +9,6 @@ class ObjectifsForAllNpcs : public BT_Feuille {
 public:
    ObjectifsForAllNpcs(GameManager& gm) : gm{ gm } {}
 
-   // Méthode naive car si on voit un objectif, on considère qu'il est atteignable !!!
-   // On devrait vérifier si il y a au moins autant d'objectifs potentiellement atteignables que de npcs !!!
    ETAT_ELEMENT execute() noexcept override;
 };
 
