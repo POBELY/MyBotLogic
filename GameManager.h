@@ -19,7 +19,9 @@ class npc_deja_existant {};
 class GameManager {
    static Logger logger, loggerRelease;
    std::vector<Npc> npcs;
+   std::vector<Npc*> waitingNpcs;
 public:
+
    Map m;
    Selecteur behaviorTreeManager; // Arbre de comportement du GameManager pour déterminer la stratégie à suivre
    vector<int> objectifPris; // Permet de savoir quels sont les objectifs actuellement assignés à des npcs
@@ -85,6 +87,8 @@ private:
    int getIndiceMouvementPrioritaire(vector<Mouvement>& mouvements, vector<int> indicesAConsiderer);
    void gererCollisionsMemeCaseCible(vector<Mouvement>& mouvements);
    void stopNonPrioritaireMouvements(vector<Mouvement>& mouvements, vector<int> indicesMouvementsSurMemeCaseCible, int indiceMouvementPrioritaire, bool& continuer);
+
+   void clearWaitingNpcs();
 };
 
 #endif

@@ -32,6 +32,9 @@ private:
    int interactDoor = -1;
    bool cross = false;
    Selecteur behaviorTreeNpc;
+   
+   enum CollisionState { waiting, moving };
+   CollisionState currentState = moving;
 
 public:
 
@@ -79,6 +82,11 @@ public:
    void setArrived(bool etat);
    void setEnsembleAccessible(Flood* associated_flooding);
    void setCross(bool newCross) { cross = newCross; };
+   
+   void setMoving() noexcept;
+   void setWaiting() noexcept;
+   bool isWaiting() const noexcept;
+   
 };
 
 #endif

@@ -129,7 +129,7 @@ void GameManager::moveNpcs(vector<Action*>& actionList) noexcept {
    for (auto mouvement : mouvements) {
       Npc& npc = getNpcById(mouvement.getNpcId());
       // On ne prend en compte notre mouvement que s'il compte
-      if (mouvement.isNotStopped()) {
+      if (!npc.isWaiting()) {
          // ET ENFIN ON FAIT BOUGER NOTRE NPC !!!!! <3
          actionList.push_back(new Move(mouvement.getNpcId(), mouvement.getDirection()));
          // ET ON LE FAIT AUSSI BOUGER DANS NOTRE MODELE !!!
@@ -152,12 +152,16 @@ void GameManager::moveNpcs(vector<Action*>& actionList) noexcept {
          actionList.push_back(new Interact(npc.getId(), npc.getInteractDoor(), Interact::EInteraction::Interaction_OpenDoor));
       }
    }
+
+   clearWaitingNpcs();
 }
 
 vector<int> getIndicesMouvementsSurMemeCaseCible(vector<Mouvement>& mouvements, int caseCible) {
    vector<int> indices;
    for (int i = 0; i < mouvements.size(); ++i) {
-      if (mouvements[i].getTileDestination() == caseCible) indices.push_back(i);
+       if (mouvements[i].getTileDestination() == caseCible) {
+           indices.push_back(i);
+       }
    }
    return indices;
 }
@@ -166,10 +170,12 @@ int GameManager::getIndiceMouvementPrioritaire(vector<Mouvement>& mouvements, ve
    int indiceMax = indicesAConsiderer[0];
    int distanceMax = getNpcById(mouvements[indicesAConsiderer[0]].getNpcId()).getChemin().distance();
    for (int i = 0; i < indicesAConsiderer.size(); ++i) {
+      Npc& npc = getNpcById(mouvements[indicesAConsiderer[i]].getNpcId());
       // Si un mouvement est stationnaire, alors personne n'est autorisé à passer !
-      if (!mouvements[indicesAConsiderer[i]].isNotStopped())
-         return -1;
-      int dist = getNpcById(mouvements[indicesAConsiderer[i]].getNpcId()).getChemin().distance();
+      if (npc.isWaiting()) {
+          return -1;
+      }
+      int dist = npc.getChemin().distance();
       if (dist > distanceMax) {
          indiceMax = i;
          distanceMax = dist;
@@ -182,16 +188,22 @@ void GameManager::stopNonPrioritaireMouvements(vector<Mouvement>& mouvements, ve
    for (int i = 0; i < indicesMouvementsSurMemeCaseCible.size(); ++i) {
       if (indicesMouvementsSurMemeCaseCible[i] != indiceMouvementPrioritaire) {
          int indice = indicesMouvementsSurMemeCaseCible[i];
-         // Si le mouvement n'était pas déjà à l'arrêt alors on a réellement effectué un changement !
-         if (mouvements[indice].isNotStopped())
-            continuer = true;
-         mouvements[indice].stop();
          Npc& npc = getNpcById(mouvements[indice].getNpcId());
+         // Si le mouvement n'était pas déjà à l'arrêt alors on a réellement effectué un changement !
+         if (!npc.isWaiting())
+            continuer = true;
+         npc.setWaiting();
+         waitingNpcs.push_back(&npc);
+         mouvements[indice].stop();
+
+         //for(Npc* npcs : waitingNpcs)  GameManager::Log(std::string("npcs : ") + to_string(npc.getId()));
+         /*
          npc.getChemin().resetChemin();
          if (indiceMouvementPrioritaire != -1)
             GameManager::Log("Npc " + to_string(mouvements[indice].getNpcId()) + " a stoppé son mouvement pour laisser la place à Npc " + to_string(mouvements[indiceMouvementPrioritaire].getNpcId()));
          else
             GameManager::Log("Npc " + to_string(mouvements[indice].getNpcId()) + " a stoppé son mouvement car quelqu'un est immobile.");
+         */
       }
    }
 }
@@ -216,6 +228,13 @@ void GameManager::gererCollisionsMemeCaseCible(vector<Mouvement>& mouvements) {
          }
       }
    }
+}
+
+void GameManager::clearWaitingNpcs() {
+    for (Npc* npc : waitingNpcs) {
+        npc->setMoving();
+    }
+    waitingNpcs.clear();
 }
 
 void GameManager::ordonnerMouvements(vector<Mouvement>& mouvements) noexcept {

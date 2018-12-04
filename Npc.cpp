@@ -267,3 +267,15 @@ void Npc::setArrived(bool etat) {
 void Npc::setEnsembleAccessible(Flood* associated_flood) {
    this->associated_flood = associated_flood;
 }
+
+void Npc::setMoving() noexcept {
+    currentState = moving;
+}
+
+void Npc::setWaiting() noexcept {
+    currentState = waiting;
+}
+
+bool Npc::isWaiting() const noexcept {
+    return currentState == waiting;
+}
