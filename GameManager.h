@@ -37,6 +37,7 @@ public:
    void moveNpcs(vector<Action*>& actionList) noexcept; // Remplie l'action liste !
    void reafecterObjectifsSelonDistance(); // Réaffecte les objectifs des Npcs entre
    void openDoors();
+   void interactWall();
    void ordonnerMouvements(vector<Mouvement>& mouvements) noexcept; // Permet d'ordonner les mouvements pour éviter les collisions et gérer les politesses de priorités =)
    void updateModel(const TurnInfo&) noexcept; // Met à jour le modèle avec les informations que découvrent les NPCS
    void unmerge_floods();

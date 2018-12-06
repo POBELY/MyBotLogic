@@ -1,14 +1,14 @@
-#ifndef NAIF_GOP_H
-#define NAIF_GOP_H
+#ifndef NAIF_GOAP_H
+#define NAIF_GOAP_H
 
 #include "../BehaviorTree/BT_Feuille.h"
 #include "../GameManager.h"
 
-class NaifGOP : public BT_Feuille {
+class NaifGOAP : public BT_Feuille {
    GameManager& gm;
 
 public:
-    NaifGOP(GameManager& gm) : gm{ gm } {}
+    NaifGOAP(GameManager& gm) : gm{ gm } {}
     ETAT_ELEMENT execute() noexcept override;
 };
 

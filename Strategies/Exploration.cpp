@@ -19,13 +19,11 @@ void Exploration::saveScore(MapTile tile) noexcept {
    // Si on a déjà visité cette case, son score est nul
    //if (tile.statut == MapTile::Statut::VISITE) return; // Appelé que si statut CONNU => non nécessaire
 
-   // Présence de portes isolés fermés
-   score += tile.getIsolatedClosedDoors().size() * COEF_PRESENCE_PORTE;
-
    // On regarde l'intêret de cette tile
    float interetTile = interet(tile);
+   if (interetTile == 0) return; // Si pas d'intêret, la tile ne nous intéresse pas !
    score += interetTile * COEF_INTERET;
-   if (score == 0) return; // Si pas d'intêret, la tile ne nous intéresse pas !
+   
 
    if (npc.getTileGoal() != -1) {
 	   score += gm.m.distanceHex(tile.getId(), npc.getTileGoal()) * COEF_DISTANCE_NPC_GOAL;
@@ -78,6 +76,9 @@ float Exploration::interet(MapTile tile) noexcept {
          interet += COEF_ACTIVATEUR;
       }
    }
+
+   // Présence de portes isolés fermés
+   interet += tile.getIsolatedClosedDoors().size() * COEF_PRESENCE_PORTE;
 
    interet += nbInconnuesAccessibles * COEF_INTERET_ACCESSIBLE;
    interet += nbInconnuesNonAccessiblesMaisVisibles * COEF_INTERET_INACCESSIBLE_MAIS_VISIBLE;

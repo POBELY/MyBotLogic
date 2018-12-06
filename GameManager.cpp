@@ -12,8 +12,8 @@
 #include "BT_Tests/InterrupteurPresence.h"
 #include "BT_Tests/MultipleNpcs.h"
 #include "Strategies/Exploitation.h"
-#include "Strategies/CurrentGOP.h"
-#include "Strategies/NaifGOP.h"
+#include "Strategies/CurrentGOAP.h"
+#include "Strategies/NaifGOAP.h"
 #include "Strategies/Execution.h"
 
 #include <algorithm>
@@ -57,13 +57,13 @@ void GameManager::InitializeBehaviorTree() noexcept {
    Exploitation *exploitation = new Exploitation(*this);
    InterrupteurPresence *interrupteurPresence = new InterrupteurPresence(*this);
    MultipleNpcs *multipleNpcs = new MultipleNpcs(*this);
-   CurrentGOP *currentGOP = new CurrentGOP(*this);
-   NaifGOP *naifGOP = new NaifGOP(*this);
+   CurrentGOAP *currentGOAP = new CurrentGOAP(*this);
+   NaifGOAP *naifGOAP = new NaifGOAP(*this);
    Execution *execution = new Execution(*this);
 
 
    Sequenceur *sequenceurExploitation = new Sequenceur({ objectifs, chemins, noCrossNpc, exploitation });
-   Selecteur *selecteurGOP = new Selecteur({ currentGOP, naifGOP });
+   Selecteur *selecteurGOP = new Selecteur({ currentGOAP, naifGOAP });
    Sequenceur *sequenceurGOP = new Sequenceur({ interrupteurPresence, multipleNpcs, selecteurGOP });
 
    behaviorTreeManager = Selecteur({ sequenceurExploitation, sequenceurGOP, execution });
@@ -118,6 +118,8 @@ void GameManager::moveNpcs(vector<Action*>& actionList) noexcept {
    reafecterObjectifsSelonDistance();
 
    openDoors();
+
+   interactWall();
 
    // On récupère tous les mouvements
    vector<Mouvement> mouvements = getAllMouvements();
@@ -297,7 +299,7 @@ void GameManager::updateModel(const TurnInfo &ti) noexcept {
    updateFlux();
 
    // Mettre à jour les cases inspectes
-   updateInspection();
+   //updateInspection(); // Méthode non correct, on devrait observer par mur, non par tuile, et l'accessibilité devait être garanti par le même NPC
 }
 
 
@@ -460,6 +462,12 @@ void GameManager::reafecterObjectifsSelonDistance() {
                             bool cross = npc.goingToCross();
                             npc.setCross(autreNpc.goingToCross());
                             autreNpc.setCross(cross);
+
+                            // Inverser InteractionWall
+                            int wallID = npc.getInteractWall();
+                            npc.inspectWall(autreNpc.getInteractWall());
+                            autreNpc.inspectWall(wallID);
+                            
 
                             continuer = true; // Et on devra continuer pour vérifier que cette intervertion n'en a pas entrainé de nouvelles !
                         }
@@ -652,6 +660,15 @@ void GameManager::openDoors() {
 
          GameManager::Log("npc " + to_string(npc.getId()) + " interact with door " + to_string(doorID));
 
+      }
+   }
+}
+
+void GameManager::interactWall() {
+   for (Npc& npc : npcs) {
+      if (npc.hadInspection()) {
+         npc.setWaiting();
+         waitingNpcs.push_back(&npc);
       }
    }
 }

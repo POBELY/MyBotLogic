@@ -12,9 +12,10 @@ BT_Noeud::ETAT_ELEMENT Inspection::execute() noexcept {
       // Inspecter l'objet et l'ajouter aux objets
       int wall2InteractID = gm.m.getTile(npc.getTileId()).inspecter();
       npc.inspectWall(wall2InteractID);
-      npc.setWaiting();
-      gm.addWaitingNpc(npc);
+      //npc.setWaiting();
+      //gm.addWaitingNpc(npc);
       gm.m.addInteractObject(wall2InteractID);
+      gm.tilesAVisiter.push_back(npc.getTileId());
       GameManager::Log("npc " + to_string(npc.getId()) + " interact with object " + to_string(wall2InteractID));
    }
    // Sinon on se déplace vers une case inspectable
