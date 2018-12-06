@@ -111,7 +111,7 @@ vector<Mouvement> GameManager::getAllMouvements() {
 }
 
 void GameManager::moveNpcs(vector<Action*>& actionList) noexcept {
-   PROFILE_SCOPE("GameManager::moveNpcs");
+   //PROFILE_SCOPE("GameManager::moveNpcs");
    // TODO !
    // Il faut réordonner les chemins entre les npcs !
    // Cad que si deux Npcs peuvent échanger leurs objectifs et que cela diminue leurs chemins respectifs, alors il faut le faire !
@@ -147,12 +147,13 @@ void GameManager::moveNpcs(vector<Action*>& actionList) noexcept {
             npc.setArrived(false);
          }
       }
-      else if (npc.hadInspection()) {
-         actionList.push_back(new Interact(npc.getId(), npc.getInteractWall(), Interact::EInteraction::Interaction_SearchHiddenDoor));
-      }
       else if (npc.hadOpenDoor()) {
          actionList.push_back(new Interact(npc.getId(), npc.getInteractDoor(), Interact::EInteraction::Interaction_OpenDoor));
       }
+      else if (npc.hadInspection()) {
+         actionList.push_back(new Interact(npc.getId(), npc.getInteractWall(), Interact::EInteraction::Interaction_SearchHiddenDoor));
+      }
+
    }
 
    clearWaitingNpcs();
@@ -240,7 +241,7 @@ void GameManager::clearWaitingNpcs() {
 }
 
 void GameManager::ordonnerMouvements(vector<Mouvement>& mouvements) noexcept {
-   PROFILE_SCOPE("GameManager::ordonnerMouvements");
+   //PROFILE_SCOPE("GameManager::ordonnerMouvements");
 
    // Si deux npcs veulent aller sur la même case, alors celui qui a le plus de chemin à faire passe, et tous les autres restent sur place !
    gererCollisionsMemeCaseCible(mouvements);
@@ -287,7 +288,7 @@ void GameManager::addNewObjects(TurnInfo ti) noexcept {
 }
 
 void GameManager::updateModel(const TurnInfo &ti) noexcept {
-   PROFILE_SCOPE("GM Update Model");
+   //PROFILE_SCOPE("GM Update Model");
 
    // On essaye de rajouter les nouvelles tiles !
    addNewTiles(ti);
@@ -328,7 +329,7 @@ void GameManager::addNpc(Npc npc) {
 }
 
 void GameManager::reafecterObjectifsSelonDistance() {
-    PROFILE_SCOPE("GameManager::reafecterObjectifsSelonDistance");
+    //PROFILE_SCOPE("GameManager::reafecterObjectifsSelonDistance");
 
 #if 0
     std::vector<std::future<std::vector<int>>> futures;
@@ -381,7 +382,7 @@ void GameManager::reafecterObjectifsSelonDistance() {
     // Tant que l'on fait des modifications on continue ...
     bool continuer = true;
 
-    if (m.getMurs().empty()) {
+    if (m.getMurs().empty() && !m.presenceForbiddenTiles) {
         while (continuer && npcs.size() > 1) {
             continuer = false;
 
@@ -409,7 +410,7 @@ void GameManager::reafecterObjectifsSelonDistance() {
                         const bool changer_apporte_gain = tempsMaxCheminApresChangement < tempsMaxChemins;
 
                         if (changer_apporte_gain) {
-                            EventProfiler::instance().register_instant_event("swap objectives");
+                            //EventProfiler::instance().register_instant_event("swap objectives");
                             npc.setChemin(m.aStar(npc.getTileId(), objectifAutreNpc));
                             autreNpc.setChemin(m.aStar(autreNpc.getTileId(), objectifNpc));
 
@@ -454,7 +455,7 @@ void GameManager::reafecterObjectifsSelonDistance() {
                         const bool changer_apporte_gain = tempsMaxCheminApresChangement < tempsMaxChemins;
 
                         if (changer_apporte_gain) {
-                            EventProfiler::instance().register_instant_event("swap objectives");
+                            //EventProfiler::instance().register_instant_event("swap objectives");
                             npc.setChemin(m.aStar(npc.getTileId(), objectifAutreNpc));
                             autreNpc.setChemin(m.aStar(autreNpc.getTileId(), objectifNpc));
 
@@ -480,7 +481,7 @@ void GameManager::reafecterObjectifsSelonDistance() {
 }
 
 void GameManager::unmerge_floods() {
-    PROFILE_SCOPE("unmerge floods");
+    //PROFILE_SCOPE("unmerge floods");
     
     for (std::vector<unsigned int>& npc_sharing_flood : shared_floods_mapping) {
         vector<int> toDemerge;
@@ -529,7 +530,7 @@ void GameManager::unmerge_floods() {
 }
 
 void GameManager::merge_floods() {
-    PROFILE_SCOPE("merge floods");
+    //PROFILE_SCOPE("merge floods");
     vector<int> toErase = {};
 
     for (int i = 0; i < shared_floods_mapping.size() - 1; ++i) {
@@ -565,7 +566,7 @@ void GameManager::merge_floods() {
 }
 
 void GameManager::grow_floods() {
-    PROFILE_SCOPE("grow floods");
+    //PROFILE_SCOPE("grow floods");
 
     for (const std::vector<unsigned int>& shared_flood_group : shared_floods_mapping) {
         Npc& flood_owner = getNpcById(shared_flood_group.front());
@@ -575,7 +576,7 @@ void GameManager::grow_floods() {
 }
 
 void GameManager::init_floods() {
-   PROFILE_SCOPE("init floods");
+   //PROFILE_SCOPE("init floods");
 
    for (auto& npc : npcs) {
       npc.getEnsembleAccessible()->reset(npc.getTileId());
@@ -585,7 +586,7 @@ void GameManager::init_floods() {
 }
 
 void GameManager::updateFlux() noexcept {
-    PROFILE_SCOPE("updateFlux");
+    //PROFILE_SCOPE("updateFlux");
 
     if (m.quitButton) init_floods();
     unmerge_floods();
@@ -594,7 +595,7 @@ void GameManager::updateFlux() noexcept {
 }
 
 void GameManager::updateInspection() noexcept {
-   PROFILE_SCOPE("updateInspection");
+   //PROFILE_SCOPE("updateInspection");
    for (MapTile& tile : m.getTiles()) {
       if (tile.getStatut() != MapTile::INSPECTEE && tile.getStatut() != MapTile::INCONNU) {
          bool inspecte = true;

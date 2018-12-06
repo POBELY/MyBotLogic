@@ -57,7 +57,7 @@ MyBotLogic::MyBotLogic() :
 
 /*virtual*/ void MyBotLogic::FillActionList(TurnInfo& _turnInfo, std::vector<Action*>& _actionList)
 {
-    PROFILE_SCOPE("Turn");
+    //PROFILE_SCOPE("Turn");
     GameManager::Log("TURN =========================== " + to_string(_turnInfo.turnNb));
     auto pre = std::chrono::high_resolution_clock::now();
     // On complète notre modèle avec l'information qu'on vient de découvrir !

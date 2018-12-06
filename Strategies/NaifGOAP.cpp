@@ -68,12 +68,12 @@ BT_Noeud::ETAT_ELEMENT NaifGOAP::execute() noexcept {
    }
 
    //// Execter l'arbre des Npc non considérés
-   //gm.tilesAVisiter = {};
-   //for (Npc& npc : gm.getNpcs()) {
-   //   if (find(npcsForActivateurs.begin(), npcsForActivateurs.end(), npc.getId()) == npcsForActivateurs.end() && find(npcsMove.begin(), npcsMove.end(), npc.getId()) == npcsMove.end()) {
-   //      npc.execute();
-   //   }
-   //}
+   gm.tilesAVisiter = {};
+   for (Npc& npc : gm.getNpcs()) {
+      if (find(npcsForActivateurs.begin(), npcsForActivateurs.end(), npc.getId()) == npcsForActivateurs.end() && find(npcsMove.begin(), npcsMove.end(), npc.getId()) == npcsMove.end()) {
+         npc.execute();
+      }
+   }
 
    // Temps d'execution
    auto post = std::chrono::high_resolution_clock::now();

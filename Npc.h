@@ -17,7 +17,6 @@ class Flood;
 class Map;
 class Npc {
 private:
-   vector<Chemin> cheminsPossibles; // Ceci est une variable temporaire permettant de stocker les chemins parmis lesquelles choisirs un objectif
    map<int, float> scoresAssocies; // Les scores associés aux tiles !
 
    int id;
@@ -50,9 +49,7 @@ public:
    void move(Tile::ETilePosition, Map&) noexcept; // Permet de faire bouger notre npc dans notre modèle =)
 
    void resetChemins() noexcept;
-   void addChemin(Chemin& chemin) noexcept;
    void addScore(int tileIndice, float score) noexcept;
-   Chemin getCheminMinNonPris(vector<int> objectifsPris, int tailleCheminMax) const noexcept; // Permet de trouver le chemin le plus court qui ne soit pas déjà pris
    int affecterMeilleurChemin(Map &m) noexcept; // Affecte au npc le chemin avec le meilleur score et renvoie la destination de ce chemin !
    void floodfill(Map &m); // Calcule le coût et l'ensemble des tiles accessibles pour un npcs, et MAJ ses attributs.
    void inspectWall(int wallID);

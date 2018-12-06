@@ -33,36 +33,11 @@ void Npc::move(Tile::ETilePosition direction, Map &m) noexcept {
 }
 
 void Npc::resetChemins() noexcept {
-   cheminsPossibles.clear();
    scoresAssocies.clear();
-}
-
-void Npc::addChemin(Chemin& chemin) noexcept {
-   cheminsPossibles.push_back(chemin);
 }
 
 void Npc::addScore(int tileIndice, float score) noexcept {
    scoresAssocies[tileIndice] = score;
-}
-
-Chemin Npc::getCheminMinNonPris(vector<int> objectifsPris, int tailleCheminMax) const noexcept {
-   Chemin cheminMin;
-   cheminMin.setInaccessible();
-   int distMin = tailleCheminMax;
-
-   for (int i = 0; i < cheminsPossibles.size(); ++i) {
-      Chemin chemin = cheminsPossibles[i];
-      // Si le chemin n'est pas déjà pris et qu'il est plus court !
-      int destination = (chemin.empty()) ? tileId : chemin.destination(); // si le npc est déjà arrivé il reste là
-      if (chemin.isAccessible()
-         && chemin.distance() < distMin
-         && (objectifsPris.empty() || find(objectifsPris.begin(), objectifsPris.end(), destination) == objectifsPris.end())) {
-         cheminMin = chemin;
-         distMin = chemin.distance();
-      }
-   }
-
-   return cheminMin;
 }
 
 void testBestScore(pair<const int, float> pair, float& bestScore, int& bestScoreIndice) {
@@ -84,14 +59,14 @@ int Npc::affecterMeilleurChemin(Map &m) noexcept {
    }
 
    // On cherche le meilleur score
-   auto preScore = std::chrono::high_resolution_clock::now();
+   //auto preScore = std::chrono::high_resolution_clock::now();
    float bestScore = scoresAssocies.begin()->second;
    int bestScoreIndice = scoresAssocies.begin()->first;
    for (auto pair : scoresAssocies) {
       testBestScore(pair, bestScore, bestScoreIndice);
    }
-   auto postScore = std::chrono::high_resolution_clock::now();
-   GameManager::Log("Durée chercher meilleur score = " + to_string(std::chrono::duration_cast<std::chrono::microseconds>(postScore - preScore).count() / 1000.f) + "ms");
+   //auto postScore = std::chrono::high_resolution_clock::now();
+   //GameManager::Log("Durée chercher meilleur score = " + to_string(std::chrono::duration_cast<std::chrono::microseconds>(postScore - preScore).count() / 1000.f) + "ms");
 
    // On affecte son chemin, mais il nous faut le calculer ! =)
    //auto preAStar = std::chrono::high_resolution_clock::now();
@@ -117,7 +92,7 @@ void ajoutIfUnkown(Map &m, int voisin, const vector<int>& oldOpen, const vector<
 }
 
 void addNewVoisins(Map &m, int tileID, const vector<int>& oldOpen, vector<int>& Open, vector<int>& newOpen) {
-   PROFILE_SCOPE("addNewVoisins");
+   //PROFILE_SCOPE("addNewVoisins");
    for (int voisin : m.getTile(tileID).getVoisinsAccessibles()) {
       ajoutIfUnkown(m, voisin, oldOpen, Open, newOpen);
    }
@@ -128,7 +103,7 @@ void addNewVoisins(Map &m, int tileID, const vector<int>& oldOpen, vector<int>& 
 }
 
 void parcourirNewVoisins(Map &m, int tileID, vector<int>& oldOpen, vector<int>& Open, vector<int>& newOpen) {
-   PROFILE_SCOPE("parcourirNewVoisins");
+   //PROFILE_SCOPE("parcourirNewVoisins");
    oldOpen.swap(newOpen);
    newOpen.clear();
    // On regarde les voisins des dernieres tuiles ajoutées
@@ -138,7 +113,7 @@ void parcourirNewVoisins(Map &m, int tileID, vector<int>& oldOpen, vector<int>& 
 }
 
 void Npc::floodfill(Map &m) {
-    PROFILE_SCOPE("floodfill");
+    //PROFILE_SCOPE("floodfill");
 #if 1
     associated_flood->reduce_to_accessibles(m);
     associated_flood->grow(m);

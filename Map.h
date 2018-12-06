@@ -32,6 +32,7 @@ class Map {
     int total_size() const noexcept { return rowCount * colCount; }
 public:
    bool quitButton = false;
+   bool presenceForbiddenTiles = false;
 
     Map() = default;
     Map(const LevelInfo);
