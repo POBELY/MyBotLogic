@@ -56,6 +56,7 @@ public:
    void addNpc(Npc npc);
    bool isDoorAdjacente(int interrupteurID);
    void setNpcsGoalTile(unsigned int goalTileId);
+   void addWaitingNpc(Npc &npc) { waitingNpcs.push_back(&npc); };
 
    static void Log(string str) noexcept { // Permet de débugger ! :D
 #ifndef _DEBUG

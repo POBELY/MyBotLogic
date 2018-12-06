@@ -96,11 +96,11 @@ int Npc::affecterMeilleurChemin(Map &m) noexcept {
    GameManager::Log("Durée chercher meilleur score = " + to_string(std::chrono::duration_cast<std::chrono::microseconds>(postScore - preScore).count() / 1000.f) + "ms");
 
    // On affecte son chemin, mais il nous faut le calculer ! =)
-   auto preAStar = std::chrono::high_resolution_clock::now();
+   //auto preAStar = std::chrono::high_resolution_clock::now();
    chemin = m.aStar(tileId, bestScoreIndice);
-   auto postAStar = std::chrono::high_resolution_clock::now();
-   GameManager::Log("Le Npc " + to_string(id) + " va rechercher la tile " + to_string(chemin.destination()));
-   GameManager::Log("Durée a* = " + to_string(std::chrono::duration_cast<std::chrono::microseconds>(postAStar - preAStar).count() / 1000.f) + "ms");
+   //auto postAStar = std::chrono::high_resolution_clock::now();
+   //GameManager::Log("Le Npc " + to_string(id) + " va rechercher la tile " + to_string(chemin.destination()));
+   //GameManager::Log("Durée a* = " + to_string(std::chrono::duration_cast<std::chrono::microseconds>(postAStar - preAStar).count() / 1000.f) + "ms");
 
    // On renvoie la destination
    return chemin.destination();

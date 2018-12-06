@@ -630,6 +630,8 @@ void GameManager::openDoors() {
    for (Npc& npc : npcs) {
       MapTile& npcTile = m.getTile(npc.getTileId());
       if (npcTile.hadisolatedClosedDoors()) {
+         npc.setWaiting();
+         waitingNpcs.push_back(&npc);
          int doorID = npcTile.getIsolatedClosedDoor();
          npc.openDoor(doorID);
          m.addInteractObject(doorID);
