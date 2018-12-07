@@ -43,7 +43,7 @@ void Npc::addScore(int tileIndice, float score) noexcept {
 void testBestScore(pair<const int, float> pair, float& bestScore, int& bestScoreIndice) {
    int tileId = pair.first;
    float score = pair.second;
-   GameManager::Log("Case potentielle à explorer : " + to_string(tileId) + " de score " + to_string(score));
+   //GameManager::Log("Case potentielle à explorer : " + to_string(tileId) + " de score " + to_string(score));
    if (score > bestScore) {
       bestScore = score;
       bestScoreIndice = tileId;
@@ -54,7 +54,7 @@ int Npc::affecterMeilleurChemin(Map &m) noexcept {
    if (scoresAssocies.empty()) {
       // Dans ce cas-là on reste sur place !
       chemin = Chemin{};
-      GameManager::Log("Le Npc " + to_string(id) + " n'a rien a rechercher et reste sur place !");
+      //GameManager::Log("Le Npc " + to_string(id) + " n'a rien a rechercher et reste sur place !");
       return tileId;
    }
 

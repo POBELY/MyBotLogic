@@ -3,9 +3,9 @@
 #include <chrono>
 
 BT_Noeud::ETAT_ELEMENT Inspection::execute() noexcept {
-   auto pre = std::chrono::high_resolution_clock::now();
+   //auto pre = std::chrono::high_resolution_clock::now();
 
-   GameManager::Log("Inspection");
+   //GameManager::Log("Inspection");
 
    // On inspecte les murs
    if (gm.m.getTile(npc.getTileId()).inspectable()) {
@@ -16,7 +16,7 @@ BT_Noeud::ETAT_ELEMENT Inspection::execute() noexcept {
       //gm.addWaitingNpc(npc);
       gm.m.addInteractObject(wall2InteractID);
       gm.tilesAVisiter.push_back(npc.getTileId());
-      GameManager::Log("npc " + to_string(npc.getId()) + " interact with object " + to_string(wall2InteractID));
+      //GameManager::Log("npc " + to_string(npc.getId()) + " interact with object " + to_string(wall2InteractID));
    }
    // Sinon on se déplace vers une case inspectable
    else {
@@ -35,8 +35,8 @@ BT_Noeud::ETAT_ELEMENT Inspection::execute() noexcept {
    }
 
    // Temps d'execution
-   auto post = std::chrono::high_resolution_clock::now();
-   GameManager::Log("Durée Inspection = " + to_string(std::chrono::duration_cast<std::chrono::microseconds>(post - pre).count() / 1000.f) + "ms");
+   //auto post = std::chrono::high_resolution_clock::now();
+   //GameManager::Log("Durée Inspection = " + to_string(std::chrono::duration_cast<std::chrono::microseconds>(post - pre).count() / 1000.f) + "ms");
 
    return ETAT_ELEMENT::REUSSI;
 }

@@ -7,9 +7,9 @@ using namespace std;
 
 BT_Noeud::ETAT_ELEMENT NaifGOAP::execute() noexcept {
    // précondition : nbNpcs > 1 && interrupteur.existe()
-   auto pre = std::chrono::high_resolution_clock::now();
+   //auto pre = std::chrono::high_resolution_clock::now();
 
-   GameManager::Log("NaifGOAP");
+   //GameManager::Log("NaifGOAP");
 
    vector<int> npcsMove = {};
    vector<int> npcsForActivateurs = {};
@@ -76,8 +76,8 @@ BT_Noeud::ETAT_ELEMENT NaifGOAP::execute() noexcept {
    }
 
    // Temps d'execution
-   auto post = std::chrono::high_resolution_clock::now();
-   GameManager::Log("Durée NaifGOAP = " + to_string(std::chrono::duration_cast<std::chrono::microseconds>(post - pre).count() / 1000.f) + "ms");
+   //auto post = std::chrono::high_resolution_clock::now();
+   //GameManager::Log("Durée NaifGOAP = " + to_string(std::chrono::duration_cast<std::chrono::microseconds>(post - pre).count() / 1000.f) + "ms");
 
    if (npcsMove.empty()) {
       return ETAT_ELEMENT::ECHEC;

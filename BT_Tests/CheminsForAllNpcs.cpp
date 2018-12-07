@@ -4,8 +4,8 @@
 
 // Vérifier si un objectif est accessible pour tous nos NPCs
 BT_Noeud::ETAT_ELEMENT CheminsForAllNpcs::execute() noexcept {
-   auto pre = std::chrono::high_resolution_clock::now();
-   GameManager::Log("CheminsForAllNpcs");
+   //auto pre = std::chrono::high_resolution_clock::now();
+   //GameManager::Log("CheminsForAllNpcs");
    
    // Indices des objectfs découverts
    vector<unsigned int> objectifNonDonne = gm.m.getObjectifs();
@@ -29,10 +29,10 @@ BT_Noeud::ETAT_ELEMENT CheminsForAllNpcs::execute() noexcept {
          objectifNonDonne.erase(it);
       // Sinon on retourne ECHEC
       } else {
-         auto post = std::chrono::high_resolution_clock::now();
-         GameManager::Log("Durée CheminsForAll = " + to_string(std::chrono::duration_cast<std::chrono::microseconds>(post - pre).count() / 1000.f) + "ms");
+         //auto post = std::chrono::high_resolution_clock::now();
+         //GameManager::Log("Durée CheminsForAll = " + to_string(std::chrono::duration_cast<std::chrono::microseconds>(post - pre).count() / 1000.f) + "ms");
          // Si le cheminMin n'a pas été initialisé, c'est qu'il n'y a pas de chemins pour tous les npcs !
-         GameManager::Log("Il n'y a pas de chemins pour tous les npcs !");
+         //GameManager::Log("Il n'y a pas de chemins pour tous les npcs !");
          return ETAT_ELEMENT::ECHEC;
       }
    }

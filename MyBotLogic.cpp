@@ -58,8 +58,8 @@ MyBotLogic::MyBotLogic() :
 /*virtual*/ void MyBotLogic::FillActionList(TurnInfo& _turnInfo, std::vector<Action*>& _actionList)
 {
     //PROFILE_SCOPE("Turn");
-    GameManager::Log("TURN =========================== " + to_string(_turnInfo.turnNb));
-    auto pre = std::chrono::high_resolution_clock::now();
+    //GameManager::Log("TURN =========================== " + to_string(_turnInfo.turnNb));
+    //auto pre = std::chrono::high_resolution_clock::now();
     // On complète notre modèle avec l'information qu'on vient de découvrir !
     gm.updateModel(_turnInfo);
 
@@ -68,14 +68,14 @@ MyBotLogic::MyBotLogic() :
 
     // On fait se déplacer chaque Npc vers son objectif associé =)
     gm.moveNpcs(_actionList);
-    auto post = std::chrono::high_resolution_clock::now();
-    GameManager::LogRelease("Durée Tour = " + to_string(std::chrono::duration_cast<std::chrono::microseconds>(post - pre).count() / 1000.f) + "ms");
+    //auto post = std::chrono::high_resolution_clock::now();
+    //GameManager::LogRelease("Durée Tour = " + to_string(std::chrono::duration_cast<std::chrono::microseconds>(post - pre).count() / 1000.f) + "ms");
 }
 
 /*virtual*/ void MyBotLogic::Exit()
 {
-    GameManager::Log("exit");
-    GameManager::LogRelease("exit");
+    //GameManager::Log("exit");
+    //GameManager::LogRelease("exit");
 
 #if ENABLE_PROFILING
     std::ofstream profile_json("LocalMatchResults\\aibotlog\\profile.json");

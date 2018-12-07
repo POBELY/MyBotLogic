@@ -261,7 +261,7 @@ Tile::ETilePosition Map::getDirection(int ind1, int ind2) const noexcept {
         }
     }
 
-    GameManager::Log("Erreur dans l'appel de getDirection() !");
+    //GameManager::Log("Erreur dans l'appel de getDirection() !");
     return Tile::CENTER;
 }
 
@@ -378,7 +378,7 @@ void Map::addTile(TileInfo tile) noexcept {
     }
 
     // On le note !
-    GameManager::Log("Decouverte de la tile " + to_string(tile.tileID));
+    //GameManager::Log("Decouverte de la tile " + to_string(tile.tileID));
 }
 
 void Map::addTile(TileInfo tile, GameManager& gm) noexcept {
@@ -406,7 +406,7 @@ void Map::addTile(TileInfo tile, GameManager& gm) noexcept {
 	}
 
 	// On le note !
-	GameManager::Log("Decouverte de la tile " + to_string(tile.tileID));
+	//GameManager::Log("Decouverte de la tile " + to_string(tile.tileID));
 }
 
 // Il ne faut pas ajouter un objet qui est déjà dans la map !
@@ -527,7 +527,7 @@ void Map::addObject(ObjectInfo object) noexcept {
     }
 
     // On le note !
-    GameManager::Log("Decouverte de l'objet " + to_string(object.objectID) + " sur la tuile " + to_string(object.tileID) + " orienté en " + to_string(object.position));
+    //GameManager::Log("Decouverte de l'objet " + to_string(object.objectID) + " sur la tuile " + to_string(object.tileID) + " orienté en " + to_string(object.position));
 }
 
 void Map::addInteractObject(int objectID) {

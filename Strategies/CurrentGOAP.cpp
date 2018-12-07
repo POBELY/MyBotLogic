@@ -4,9 +4,9 @@
 
 BT_Noeud::ETAT_ELEMENT CurrentGOAP::execute() noexcept {
    // précondition : nbNpcs > 1 && interrupteur.existe()
-   auto pre = std::chrono::high_resolution_clock::now();
+   //auto pre = std::chrono::high_resolution_clock::now();
 
-   GameManager::Log("CurrentGOAP");
+   //GameManager::Log("CurrentGOAP");
 
    bool npcOnActivateur = false;
    int activateurID;
@@ -29,8 +29,8 @@ BT_Noeud::ETAT_ELEMENT CurrentGOAP::execute() noexcept {
    }
 
    if (!npcOnActivateur) {
-      auto post = std::chrono::high_resolution_clock::now();
-      GameManager::Log("Durée CurrentGOAP Echec = " + to_string(std::chrono::duration_cast<std::chrono::microseconds>(post - pre).count() / 1000.f) + "ms");
+      //auto post = std::chrono::high_resolution_clock::now();
+      //GameManager::Log("Durée CurrentGOAP Echec = " + to_string(std::chrono::duration_cast<std::chrono::microseconds>(post - pre).count() / 1000.f) + "ms");
 
       return ETAT_ELEMENT::ECHEC;
    }
@@ -67,8 +67,8 @@ BT_Noeud::ETAT_ELEMENT CurrentGOAP::execute() noexcept {
    }
 
    // Temps d'execution
-   auto post = std::chrono::high_resolution_clock::now();
-   GameManager::Log("Durée CurrentGOAP = " + to_string(std::chrono::duration_cast<std::chrono::microseconds>(post - pre).count() / 1000.f) + "ms");
+   //auto post = std::chrono::high_resolution_clock::now();
+   //GameManager::Log("Durée CurrentGOAP = " + to_string(std::chrono::duration_cast<std::chrono::microseconds>(post - pre).count() / 1000.f) + "ms");
    if (traverse) {
       return ETAT_ELEMENT::REUSSI;
    }

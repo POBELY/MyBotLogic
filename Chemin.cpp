@@ -17,7 +17,7 @@ int Chemin::destination() const noexcept {
 	if (!chemin.empty() && !inaccessible) {
 		return chemin[0];
     } else {
-        GameManager::Log("Attention, on essaye de récupérer la destination d'un chemin vide !");
+        //GameManager::Log("Attention, on essaye de récupérer la destination d'un chemin vide !");
         return -1;
     }
 }

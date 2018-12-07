@@ -82,19 +82,19 @@ vector<Mouvement> GameManager::getAllMouvements() {
 
    // Pour tous les NPCs, s'il n'y a aucun autre Npc devant eux
    for (auto& npc : npcs) {
-      GameManager::Log("NPC = " + to_string(npc.getId()));
-      GameManager::Log("chemin = " + npc.getChemin().toString());
-      GameManager::Log("case actuelle = " + to_string(npc.getTileId()));
+      //GameManager::Log("NPC = " + to_string(npc.getId()));
+      //GameManager::Log("chemin = " + npc.getChemin().toString());
+      //GameManager::Log("case actuelle = " + to_string(npc.getTileId()));
 
       // Si le npc doit aller quelquepart !!!
       if (!npc.getChemin().empty()) {
          // On récupère la case où il doit aller
          int caseCible = npc.getChemin().getFirst();
-         GameManager::Log("case cible = " + to_string(caseCible));
+         //GameManager::Log("case cible = " + to_string(caseCible));
 
 
          Tile::ETilePosition direction = m.getDirection(npc.getTileId(), caseCible);
-         GameManager::Log(std::string("direction = ") + to_string(direction));
+         //GameManager::Log(std::string("direction = ") + to_string(direction));
 
          // On enregistre le mouvement
          mouvements.push_back(Mouvement(npc.getId(), npc.getTileId(), caseCible, direction));
@@ -102,7 +102,7 @@ vector<Mouvement> GameManager::getAllMouvements() {
          npc.getChemin().removeFirst(); // On peut supprimer le chemin
       }
       else {
-         GameManager::Log("case cible = Ne Bouge Pas");
+         //GameManager::Log("case cible = Ne Bouge Pas");
          // Même si le Npc ne bouge pas, il a quand même un mouvement statique !
          mouvements.push_back(Mouvement(npc.getId(), npc.getTileId(), npc.getTileId(), Tile::ETilePosition::CENTER));
       }
@@ -659,7 +659,7 @@ void GameManager::openDoors() {
          npc.getChemin().resetChemin();
          npc.getChemin().addFirst(npc.getTileId());
 
-         GameManager::Log("npc " + to_string(npc.getId()) + " interact with door " + to_string(doorID));
+         //GameManager::Log("npc " + to_string(npc.getId()) + " interact with door " + to_string(doorID));
 
       }
    }

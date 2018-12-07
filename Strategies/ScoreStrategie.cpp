@@ -36,7 +36,7 @@ BT_Noeud::ETAT_ELEMENT ScoreStrategie::execute() noexcept {
       return ETAT_ELEMENT::REUSSI;
    }
 
-   GameManager::Log(nom + " Echec");
+   //GameManager::Log(nom + " Echec");
    return ETAT_ELEMENT::ECHEC;
 
 }
