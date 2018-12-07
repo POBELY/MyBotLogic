@@ -61,15 +61,13 @@ SET( AIBOT_HEADERS
 	MyBotLogic/BT_Tests/CheminsForAllNpcs.h
 	MyBotLogic/BT_Tests/InterrupteurPresence.h
 	MyBotLogic/BT_Tests/MultipleNpcs.h
-	MyBotLogic/Strategies/Expedition.h
 	MyBotLogic/Strategies/Exploitation.h
-	MyBotLogic/Strategies/CurrentGOP.h
-	MyBotLogic/Strategies/NaifGOP.h
+	MyBotLogic/Strategies/CurrentGOAP.h
+	MyBotLogic/Strategies/NaifGOAP.h
 	MyBotLogic/Strategies/Exploration.h
 	MyBotLogic/Strategies/Execution.h
 	MyBotLogic/Strategies/ScoreStrategie.h
 	MyBotLogic/Strategies/Inspection.h
-	MyBotLogic/Strategies/OpenDoor.h
 	MyBotLogic/Flood.h
 	MyBotLogic/Profileur.h
 )
@@ -95,15 +93,13 @@ SET( AIBOT_SRC
 	MyBotLogic/BT_Tests/CheminsForAllNpcs.cpp
 	MyBotLogic/BT_Tests/InterrupteurPresence.cpp
 	MyBotLogic/BT_Tests/MultipleNpcs.cpp
-	MyBotLogic/Strategies/Expedition.cpp
 	MyBotLogic/Strategies/Exploitation.cpp
-	MyBotLogic/Strategies/CurrentGOP.cpp
-	MyBotLogic/Strategies/NaifGOP.cpp
+	MyBotLogic/Strategies/CurrentGOAP.cpp
+	MyBotLogic/Strategies/NaifGOAP.cpp
 	MyBotLogic/Strategies/Exploration.cpp
 	MyBotLogic/Strategies/Execution.cpp
 	MyBotLogic/Strategies/ScoreStrategie.cpp
 	MyBotLogic/Strategies/Inspection.cpp
-	MyBotLogic/Strategies/OpenDoor.cpp
 	MyBotLogic/Flood.cpp
 	MyBotLogic/Profileur.cpp
 	
